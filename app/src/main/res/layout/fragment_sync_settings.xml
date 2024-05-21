@@ -125,6 +125,57 @@
                         app:text="@string/preference_nextcloud_clear_credentials"
                         app:iconSrc="@drawable/ic_logout"/>
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_webdav_settings"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/colorOutline"/>
+
+                <TextView
+                    android:text="@string/preferences_cloud_service_webdav"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/inter_font_family"
+                    android:textColor="?attr/colorPrimary"
+                    android:padding="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:text="@string/preferences_webdav_limited_features"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="16dp"
+                    android:paddingBottom="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <org.qosp.notes.ui.utils.views.PreferenceView
+                    android:id="@+id/setting_webdav_server"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:text="@string/preferences_webdav_instance_url"
+                    app:subText="@string/preferences_webdav_set_server_url"
+                    app:iconSrc="@drawable/ic_web"/>
+
+                <org.qosp.notes.ui.utils.views.PreferenceView
+                    android:id="@+id/setting_webdav_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:text="@string/preferences_webdav_account"
+                    app:subText="@string/preferences_webdav_set_your_credentials"
+                    app:iconSrc="@drawable/ic_person"/>
+                <org.qosp.notes.ui.utils.views.PreferenceView
+                    android:id="@+id/setting_webdav_clear_credentials"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:text="@string/preference_webdav_clear_credentials"
+                    app:iconSrc="@drawable/ic_logout"/>
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 

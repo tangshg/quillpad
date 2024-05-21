@@ -75,12 +75,18 @@
     <string name="preferences_cloud_service">同步服务</string>
     <string name="preferences_cloud_service_disabled">禁用</string>
     <string name="preferences_cloud_service_nextcloud">Nextcloud</string>
+    <string name="preferences_cloud_service_webdav">Webdav</string>
     <string name="preferences_sync_experimental_warning">同步功能目前处于试验阶段。\n您可能会遇到错误。</string>
     <string name="preferences_nextcloud_limited_features">请记住，Nextcloud Notes 不支持标签、附件、提醒等功能。</string>
+    <string name="preferences_webdav_limited_features">请记住，Nextcloud Notes 不支持标签、附件、提醒等功能。</string>
     <string name="preferences_nextcloud_account">Nextcloud 帐户</string>
+    <string name="preferences_webdav_account">Webdav 帐户</string>
     <string name="preferences_nextcloud_instance_url">Nextcloud 实例网址</string>
+    <string name="preferences_webdav_instance_url">Webdav 实例网址</string>
     <string name="preferences_nextcloud_set_your_credentials">设置您的证书</string>
     <string name="preferences_nextcloud_set_server_url">设置服务器的网址</string>
+    <string name="preferences_webdav_set_your_credentials">设置您的 webdav 证书</string>
+    <string name="preferences_webdav_set_server_url">设置 webdav 服务器的网址</string>
     <string name="preferences_sync_on_wifi">无线局域网</string>
     <string name="preferences_sync_on_wifi_data">无线局域网与流量数据</string>
     <string name="preferences_sync_when_on">启用时同步</string>
@@ -267,6 +273,7 @@
     <string name="message_internet_not_available">互联网连接不可用。</string>
     <string name="message_credentials_cannot_be_blank">证书不能为空。</string>
     <string name="preference_nextcloud_clear_credentials">清除证书和服务器的URL网址</string>
+    <string name="preference_webdav_clear_credentials">清除 webdav 证书和服务器的URL网址</string>
     <string name="notification_media_play_pause">播放 / 暂停</string>
     <string name="notification_media_stop">停止</string>
 

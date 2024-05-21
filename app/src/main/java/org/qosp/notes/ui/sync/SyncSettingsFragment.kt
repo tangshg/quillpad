@@ -122,5 +122,6 @@ class SyncSettingsFragment : BaseFragment(R.layout.fragment_sync_settings) {
     private fun setProviderSettingsVisibility(currentProvider: CloudService) {
         binding.layoutNextcloudSettings.isVisible = currentProvider == CloudService.NEXTCLOUD
         binding.layoutGenericSettings.isVisible = currentProvider != CloudService.DISABLED
+        binding.layoutWebdavSettings.isVisible = currentProvider == CloudService.WEBDAV
     }
 }

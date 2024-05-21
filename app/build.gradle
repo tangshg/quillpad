@@ -161,4 +161,8 @@ dependencies {
 
     // LeakCanary
     debugImplementation libs.leakcanaryAndroid
+
+    // Webdav
+    implementation libs.sardineAndroid
+
 }

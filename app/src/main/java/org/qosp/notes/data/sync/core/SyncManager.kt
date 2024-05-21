@@ -1,5 +1,6 @@
 package org.qosp.notes.data.sync.core
 
+import android.util.Log
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +18,7 @@ import org.qosp.notes.data.repo.IdMappingRepository
 import org.qosp.notes.data.sync.nextcloud.NextcloudConfig
 import org.qosp.notes.data.sync.nextcloud.NextcloudManager
 import org.qosp.notes.preferences.CloudService
+import org.qosp.notes.preferences.CloudService.*
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.preferences.SyncMode
 import org.qosp.notes.ui.utils.ConnectionManager
@@ -32,8 +34,14 @@ class SyncManager(
     @OptIn(ExperimentalCoroutinesApi::class)
     val prefs: Flow<SyncPrefs> = preferenceRepository.getAll().flatMapLatest { prefs ->
         when (prefs.cloudService) {
-            CloudService.DISABLED -> flowOf(SyncPrefs(false, null, prefs.syncMode, null))
-            CloudService.NEXTCLOUD -> {
+            DISABLED -> flowOf(SyncPrefs(false, null, prefs.syncMode, null))
+            NEXTCLOUD -> {
+                NextcloudConfig.fromPreferences(preferenceRepository).map { config ->
+                    SyncPrefs(true, nextcloudManager, prefs.syncMode, config)
+                }
+            }
+            //TODO 待实现配置信息
+            WEBDAV ->{
                 NextcloudConfig.fromPreferences(preferenceRepository).map { config ->
                     SyncPrefs(true, nextcloudManager, prefs.syncMode, config)
                 }
