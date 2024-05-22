@@ -3,6 +3,9 @@ package org.qosp.notes.data.sync.webdav.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+
+//  不需要这个类
+
 /**
  * 表示WebDAV功能的类，包含API版本和 WebDAV的版本信息。
  */

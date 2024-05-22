@@ -61,8 +61,14 @@ class WebdavViewModel @Inject constructor(
         val response: BaseResult = withContext(Dispatchers.IO) {
             // 执行同步管理器的认证操作
             val loginResult = syncManager.authenticate(config)
+
             // 如果认证成功，则检查服务器是否兼容；否则，直接返回认证结果。
-            if (loginResult == Success) syncManager.isServerCompatible(config) else loginResult
+            //取消检查服务器的兼容检查
+            if (loginResult == Success) {
+                syncManager.isServerCompatible(config)
+            }
+            else
+                loginResult
         }
 
         //存储账号密码

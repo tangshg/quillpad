@@ -1,28 +1,26 @@
 package org.qosp.notes.ui.sync.webdav
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.thegrizzlylabs.sardineandroid.Sardine
+import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.qosp.notes.R
-import org.qosp.notes.data.sync.core.NoConnectivity
-import org.qosp.notes.data.sync.core.ServerNotSupported
-import org.qosp.notes.data.sync.core.Success
 import org.qosp.notes.data.sync.core.SyncManager
-import org.qosp.notes.data.sync.core.Unauthorized
-import org.qosp.notes.databinding.DialogNextcloudAccountBinding
 import org.qosp.notes.databinding.DialogWebdavAccountBinding
 import org.qosp.notes.ui.common.BaseDialog
 import org.qosp.notes.ui.common.setButton
-import org.qosp.notes.ui.sync.nextcloud.NextcloudViewModel
 import org.qosp.notes.ui.utils.requestFocusAndKeyboard
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
@@ -68,6 +66,18 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
             //启动协程，开始连接操作
             lifecycleScope.launch {
 
+
+                val sardine: Sardine = OkHttpSardine() //实例化
+                sardine.setCredentials(username, password)
+
+                //TODO 这里写死了连接地址，后续需要改成配置文件
+                val resources = sardine.list("https://dav.jianguoyun.com/dav/")
+
+
+                Log.i("tangshg","$resources")
+
+                /*
+                //如果连接成功，则提示连接成功，并关闭对话框
                 //首先对账号进行检验
                 //TODO authenticate 函数
                 val result = model.authenticate(username, password)
@@ -86,6 +96,8 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
                     val text = getString(R.string.message_something_went_wrong) + "\n" + result.message
                     Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
                 }
+
+                 */
             }
         }
 

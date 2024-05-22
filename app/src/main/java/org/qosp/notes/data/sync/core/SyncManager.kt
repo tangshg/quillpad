@@ -122,9 +122,11 @@ class SyncManager(
         IsServerCompatible(provider, config)
     }
 
-    suspend fun authenticate(customConfig: ProviderConfig? = null) = sendMessage(customConfig) { provider, config ->
+    suspend fun authenticate(customConfig: ProviderConfig? = null) = sendMessage(customConfig)
+    { provider, config ->
         Authenticate(provider, config)
     }
+
 }
 
 data class SyncPrefs(

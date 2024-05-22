@@ -107,10 +107,11 @@ interface WebdavAPI {
 }
 
 /**
- * 通过API获取Nextcloud笔记应用的能力信息。
+ * 通过 API 获取 Nextcloud 笔记应用的能力信息。
  * @param config 包含Nextcloud的配置信息。
  * @return Nextcloud笔记应用的能力信息。
  */
+//TODO 这里不需要，删除
 suspend fun WebdavAPI.getNotesCapabilities(config: NextcloudConfig): NextcloudCapabilities? {
     // 构建获取能力信息的完整URL
     val endpoint = "ocs/v2.php/cloud/capabilities"
