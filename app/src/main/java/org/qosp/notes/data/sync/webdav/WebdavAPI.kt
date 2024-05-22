@@ -27,8 +27,6 @@ const val baseURL = "index.php/apps/notes/api/v1/"
  */
 interface WebdavAPI {
 
-
-    //定义WebdavAPI接口
     //获取所有的笔记列表
     suspend fun getNotesAPI(
         url: String,
@@ -56,9 +54,6 @@ interface WebdavAPI {
     suspend fun deleteNoteAPI(
         url: String,
     )
-
-
-
 }//上面是定义的接口
 
 /**
@@ -80,6 +75,7 @@ suspend fun WebdavAPI.getNotes(config: WebdavConfig): List<WebdavNote> {
         //auth = config.credentials,
     )
 }
+
 //获取笔记
 suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
     return getNoteAPI(
@@ -88,6 +84,7 @@ suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
         //auth = config.credentials,
     )
 }
+
 //删除笔记文件
 suspend fun WebdavAPI.deleteNote(note: WebdavNote, config: WebdavConfig) {
     deleteNoteAPI(
@@ -95,6 +92,7 @@ suspend fun WebdavAPI.deleteNote(note: WebdavNote, config: WebdavConfig) {
         //auth = config.credentials,
     )
 }
+
 //升级笔记
 suspend fun WebdavAPI.updateNote(note: WebdavNote, etag: String, config: WebdavConfig): WebdavNote {
     return updateNoteAPI(
@@ -104,6 +102,7 @@ suspend fun WebdavAPI.updateNote(note: WebdavNote, etag: String, config: WebdavC
         //auth = config.credentials,
     )
 }
+
 //创建新笔记
 suspend fun WebdavAPI.createNote(note: WebdavNote, config: WebdavConfig): WebdavNote {
     return createNoteAPI (

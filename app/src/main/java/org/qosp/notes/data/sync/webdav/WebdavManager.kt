@@ -29,6 +29,7 @@ import org.qosp.notes.data.sync.nextcloud.model.asNextcloudNote
 import org.qosp.notes.data.sync.nextcloud.testCredentials
 import org.qosp.notes.data.sync.nextcloud.updateNote
 import org.qosp.notes.data.sync.webdav.model.WebdavNote
+import org.qosp.notes.data.sync.webdav.model.asWebdavNote
 import org.qosp.notes.preferences.CloudService
 import retrofit2.HttpException
 
@@ -41,13 +42,11 @@ import retrofit2.HttpException
  * @param idMappingRepository 本地和远程笔记ID映射的存储库。
  */
 class WebdavManager(
-    private val nextcloudAPI: WebdavAPI, // Nextcloud API客户端，用于与服务器交互
+    private val webdavAPI: WebdavAPI, // Nextcloud API客户端，用于与服务器交互
     private val noteRepository: NoteRepository, // 笔记数据仓库
     private val notebookRepository: NotebookRepository, // 笔记本数据仓库
     private val idMappingRepository: IdMappingRepository, // ID映射数据仓库，记录本地与远程笔记ID对应关系
 ) : SyncProvider {
-
-
     /**
      * 在 webdav 服务器上创建新的笔记。
      *
@@ -55,8 +54,6 @@ class WebdavManager(
      * @param config 配置信息，必须是NextcloudConfig类型。
      * @return 创建笔记的结果。
      */
-
-
     override suspend fun createNote(
         note: Note,
         config: ProviderConfig
@@ -68,7 +65,7 @@ class WebdavManager(
         if (nextcloudNote.id != 0L) return GenericError("Cannot create note that already exists")
 
         return tryCalling {
-            val savedNote = nextcloudAPI.createNote(WebdavNote, config)
+            val savedNote = webdavAPI.createNote(WebdavNote, config)
             idMappingRepository.assignProviderToNote(
                 IdMapping(
                     localNoteId = note.id,
@@ -99,7 +96,7 @@ class WebdavManager(
         if (nextcloudNote.id == 0L) return GenericError("Cannot delete note that does not exist.")
 
         return tryCalling {
-            nextcloudAPI.deleteNote(nextcloudNote, config)
+            webdavAPI.deleteNote(nextcloudNote, config)
             idMappingRepository.deleteByRemoteId(CloudService.NEXTCLOUD, nextcloudNote.id)
         }
     }
@@ -119,7 +116,7 @@ class WebdavManager(
         if (nextcloudNote.id == 0L) return GenericError("Cannot delete note that does not exist.")
 
         return tryCalling {
-            nextcloudAPI.deleteNote(nextcloudNote, config)
+            webdavAPI.deleteNote(nextcloudNote, config)
             idMappingRepository.unassignProviderFromNote(CloudService.NEXTCLOUD, note.id)
         }
     }
@@ -166,7 +163,7 @@ class WebdavManager(
         if (config !is NextcloudConfig) return InvalidConfig
 
         return tryCalling {
-            nextcloudAPI.testCredentials(config)
+            webdavAPI.testCredentials(config)
         }
     }
 
@@ -180,7 +177,7 @@ class WebdavManager(
         if (config !is NextcloudConfig) return InvalidConfig
 
         return tryCalling {
-            val capabilities = nextcloudAPI.getNotesCapabilities(config)!!
+            val capabilities = webdavAPI.getNotesCapabilities(config)!!
             val maxServerVersion = capabilities.apiVersion.last().toFloat()
 
             if (MIN_SUPPORTED_VERSION.toFloat() > maxServerVersion) throw ServerNotSupportedException
@@ -217,7 +214,7 @@ class WebdavManager(
 
         return tryCalling {
             // Fetch notes from the cloud
-            val nextcloudNotes = nextcloudAPI.getNotes(config)
+            val nextcloudNotes = webdavAPI.getNotes(config)
 
             val localNoteIds = noteRepository
                 .getAll()
@@ -255,7 +252,7 @@ class WebdavManager(
                     }
                     else -> {
                         if (mapping.isDeletedLocally && mapping.remoteNoteId != null) {
-                            nextcloudAPI.deleteNote(remoteNote, config)
+                            webdavAPI.deleteNote(remoteNote, config)
                             continue
                         }
 
@@ -278,7 +275,7 @@ class WebdavManager(
             // Finally, upload any new local notes that are not mapped to any remote id
             val newLocalNotes = noteRepository.getNonRemoteNotes(CloudService.NEXTCLOUD).first()
             newLocalNotes.forEach {
-                val newRemoteNote = nextcloudAPI.createNote(it.asNextcloudNote(), config)
+                val newRemoteNote = webdavAPI.createNote(it.asNextcloudNote(), config)
                 idMappingRepository.assignProviderToNote(
                     IdMapping(
                         localNoteId = it.id,
@@ -296,7 +293,7 @@ class WebdavManager(
     // 使用etag更新笔记
     private suspend fun updateNoteWithEtag(
         note: Note,
-        nextcloudNote: NextcloudNote,
+        nextcloudNote: WebdavNote,
         etag: String? = null,
         config: NextcloudConfig
     ) {
@@ -321,6 +318,15 @@ class WebdavManager(
         return asNextcloudNote(id = id ?: 0L, category = notebookName ?: "")
     }
 
+
+    //本地笔记转 webdav 格式
+    private suspend fun Note.asWebdavNote(newId: Long? = null): WebdavNote{
+        val id = newId ?: idMappingRepository.getByLocalIdAndProvider(id,CloudService.WEBDAV)?.remoteNoteId
+        val notebookName = notebookId?.let { notebookRepository.getById(it).first()?.name }
+        return asWebdavNote(id=id ?: 0L,category = notebookName ?: "")
+    }
+
+
     // Nextcloud笔记转本地格式（更新）
     private suspend fun NextcloudNote.asUpdatedLocalNote(note: Note) = note.copy(
         title = title,
@@ -338,6 +344,18 @@ class WebdavManager(
         val notebookId = getNotebookIdForCategory(category)
         return asNewLocalNote(id = id ?: 0L, notebookId = notebookId)
     }
+
+    // Webdav 笔记转本地格式（新笔记）
+    //TODO 格式需要更新
+
+    private suspend fun WebdavNote.asNewLocalNote(newId: Long? = null): Note {
+        val id = newId ?: idMappingRepository.getByRemoteId(id, CloudService.WEBDAV)?.localNoteId
+        val notebookId = getNotebookIdForCategory(category)
+
+        return asNewLocalNote(id, )
+    }
+
+
 
     // 根据类别获取或创建笔记本ID
     private suspend fun getNotebookIdForCategory(category: String): Long? {
