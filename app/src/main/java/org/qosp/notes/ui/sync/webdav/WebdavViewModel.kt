@@ -1,8 +1,11 @@
 package org.qosp.notes.ui.sync.webdav
 
+import android.util.Log
 import android.webkit.URLUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.thegrizzlylabs.sardineandroid.Sardine
+import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -25,6 +28,7 @@ class WebdavViewModel @Inject constructor(
     val username = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_USERNAME)
     val password = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_PASSWORD)
 
+
     //设置 URL，保存到偏好仓库
     fun setURL(url: String) = viewModelScope.launch {
         if (!URLUtil.isHttpsUrl(url)) return@launch
@@ -33,6 +37,34 @@ class WebdavViewModel @Inject constructor(
         preferenceRepository.putEncryptedStrings(
             PreferenceRepository.WEBDAV_INSTANCE_URL to url,
         )
+    }
+
+
+
+
+    suspend fun WebdavAuthenticate(username: String,password: String) = withContext(Dispatchers.IO) {
+        //获取 webdav 的网址
+        val url = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
+        //TODO 当前仓库中的网址为
+        Log.i("tangshg",url)
+
+        //开始连接操作
+        val sardine: Sardine = OkHttpSardine() //实例化
+        sardine.setCredentials(username, password)
+
+        //TODO 这里写死了连接地址，后续需要改成配置文件
+        val resources = sardine.list(url)
+
+
+        Log.i("tangshg","$resources")
+
+        if (resources.isNotEmpty()) {
+            // 认证成功
+            return@withContext Success
+        } else {
+            // 认证失败
+
+        }
     }
 
     /**

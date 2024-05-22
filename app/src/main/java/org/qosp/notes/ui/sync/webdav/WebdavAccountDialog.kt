@@ -67,14 +67,8 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
             lifecycleScope.launch {
 
 
-                val sardine: Sardine = OkHttpSardine() //实例化
-                sardine.setCredentials(username, password)
+                model.WebdavAuthenticate(username, password)
 
-                //TODO 这里写死了连接地址，后续需要改成配置文件
-                val resources = sardine.list("https://dav.jianguoyun.com/dav/")
-
-
-                Log.i("tangshg","$resources")
 
                 /*
                 //如果连接成功，则提示连接成功，并关闭对话框
