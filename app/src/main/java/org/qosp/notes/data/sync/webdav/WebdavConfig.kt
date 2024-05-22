@@ -21,7 +21,7 @@ data class WebdavConfig(
     // 计算基础认证信息头，用于HTTP认证
     val credentials = ("Basic " + Base64.encodeToString("$username:$password".toByteArray(), Base64.NO_WRAP)).trim()
 
-    override val provider: CloudService = CloudService.NEXTCLOUD // 服务提供商类型
+    override val provider: CloudService = CloudService.WEBDAV // 服务提供商类型
     override val authenticationHeaders: Map<String, String> // 认证所需的HTTP头
         get() = mapOf("Authorization" to credentials)
 

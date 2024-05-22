@@ -39,6 +39,7 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         dialog.setTitle(getString(R.string.preferences_webdav_account))
 
+        // viewModel 中读数并设置输入框
         lifecycleScope.launch {
             username = model.username.first()
             password = model.password.first()
@@ -49,19 +50,28 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
             }
         }
 
+        //当按下保存的时候，对输入框进行校验
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.action_save), this@WebdavAccountDialog) {
+            //获取输入框的内容
             username = binding.editTextUsername.text.toString()
             password = binding.editTextPassword.text.toString()
 
+            //判空操作，弹出 Toast 进行提示
             if (username.isBlank() or password.isBlank()) {
                 Toast.makeText(requireContext(), getString(R.string.message_credentials_cannot_be_blank), Toast.LENGTH_SHORT).show()
                 return@setButton
             }
 
+            //如果不为空，提示连接中
             Toast.makeText(requireContext(), getString(R.string.indicator_connecting), Toast.LENGTH_LONG).show()
 
+            //启动协程，开始连接操作
             lifecycleScope.launch {
+
+                //首先对账号进行检验
+                //TODO authenticate 函数
                 val result = model.authenticate(username, password)
+
                 val messageResId = when (result) {
                     NoConnectivity -> R.string.message_internet_not_available
                     ServerNotSupported -> R.string.message_server_not_compatible
