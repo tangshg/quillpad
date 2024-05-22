@@ -87,8 +87,21 @@ class SyncSettingsFragment : BaseFragment(R.layout.fragment_sync_settings) {
             binding.settingNextcloudServer.subText = nextcloudUrl.ifEmpty { getString(R.string.preferences_nextcloud_set_server_url) }
         }
 
+        //显示 webdav 的网址信息
+        model.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).collect(viewLifecycleOwner) {
+            webdavUrl = it
+            binding.settingWebdavServer.subText = webdavUrl.ifEmpty { getString(R.string.preferences_webdav_set_server_url) }
+        }
+
         model.loggedInUsername.collect(viewLifecycleOwner) {
             binding.settingNextcloudAccount.subText = if (it != null) {
+                getString(R.string.indicator_nextcloud_currently_logged_in_as, it)
+            } else {
+                getString(R.string.preferences_nextcloud_set_your_credentials)
+            }
+        }
+        model.loggedInUsername.collect(viewLifecycleOwner) {
+            binding.settingWebdavAccount.subText = if (it != null) {
                 getString(R.string.indicator_nextcloud_currently_logged_in_as, it)
             } else {
                 getString(R.string.preferences_nextcloud_set_your_credentials)
