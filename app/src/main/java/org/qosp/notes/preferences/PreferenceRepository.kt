@@ -74,5 +74,9 @@ class PreferenceRepository(
         const val NEXTCLOUD_INSTANCE_URL = "NEXTCLOUD_INSTANCE_URL"
         const val NEXTCLOUD_USERNAME = "NEXTCLOUD_USERNAME"
         const val NEXTCLOUD_PASSWORD = "NEXTCLOUD_PASSWORD"
+
+        const val WEBDAV_INSTANCE_URL = "WEBDAV_INSTANCE_URL"
+        const val WEBDAV_USERNAME = "WEBDAV_USERNAME"
+        const val WEBDAV_PASSWORD = "WEBDAV_PASSWORD"
     }
 }

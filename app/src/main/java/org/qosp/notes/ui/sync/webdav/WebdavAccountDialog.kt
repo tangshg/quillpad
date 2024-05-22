@@ -17,6 +17,7 @@ import org.qosp.notes.data.sync.core.Success
 import org.qosp.notes.data.sync.core.SyncManager
 import org.qosp.notes.data.sync.core.Unauthorized
 import org.qosp.notes.databinding.DialogNextcloudAccountBinding
+import org.qosp.notes.databinding.DialogWebdavAccountBinding
 import org.qosp.notes.ui.common.BaseDialog
 import org.qosp.notes.ui.common.setButton
 import org.qosp.notes.ui.sync.nextcloud.NextcloudViewModel
@@ -24,8 +25,8 @@ import org.qosp.notes.ui.utils.requestFocusAndKeyboard
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class WebdavAccountDialog : BaseDialog<DialogNextcloudAccountBinding>() {
-    private val model: NextcloudViewModel by activityViewModels()
+class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
+    private val model: WebdavViewModel by activityViewModels()
 
     private var username = ""
     private var password = ""
@@ -33,10 +34,10 @@ class WebdavAccountDialog : BaseDialog<DialogNextcloudAccountBinding>() {
     @Inject
     lateinit var syncManager: SyncManager
 
-    override fun createBinding(inflater: LayoutInflater) = DialogNextcloudAccountBinding.inflate(layoutInflater)
+    override fun createBinding(inflater: LayoutInflater) = DialogWebdavAccountBinding.inflate(layoutInflater)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        dialog.setTitle(getString(R.string.preferences_nextcloud_account))
+        dialog.setTitle(getString(R.string.preferences_webdav_account))
 
         lifecycleScope.launch {
             username = model.username.first()

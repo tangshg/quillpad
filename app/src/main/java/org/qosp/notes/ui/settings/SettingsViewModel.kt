@@ -42,4 +42,12 @@ class SettingsViewModel @Inject constructor(
             PreferenceRepository.NEXTCLOUD_USERNAME to "",
         )
     }
+
+    fun clearWebdavCredentials() = viewModelScope.launch {
+        preferenceRepository.putEncryptedStrings(
+            PreferenceRepository.WEBDAV_INSTANCE_URL to "",
+            PreferenceRepository.WEBDAV_PASSWORD to "",
+            PreferenceRepository.WEBDAV_USERNAME to "",
+        )
+    }
 }

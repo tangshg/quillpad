@@ -1,6 +1,7 @@
 package org.qosp.notes.ui.sync
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
@@ -16,6 +17,8 @@ import org.qosp.notes.ui.settings.SettingsViewModel
 import org.qosp.notes.ui.settings.showPreferenceDialog
 import org.qosp.notes.ui.sync.nextcloud.NextcloudAccountDialog
 import org.qosp.notes.ui.sync.nextcloud.NextcloudServerDialog
+import org.qosp.notes.ui.sync.webdav.WebdavAccountDialog
+import org.qosp.notes.ui.sync.webdav.WebdavServerDialog
 import org.qosp.notes.ui.utils.collect
 import org.qosp.notes.ui.utils.liftAppBarOnScroll
 import org.qosp.notes.ui.utils.viewBinding
@@ -34,6 +37,9 @@ class SyncSettingsFragment : BaseFragment(R.layout.fragment_sync_settings) {
     private var appPreferences = AppPreferences()
 
     private var nextcloudUrl = ""
+
+    //TODO 对 Url 处理
+    private var webdavUrl = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,6 +60,12 @@ class SyncSettingsFragment : BaseFragment(R.layout.fragment_sync_settings) {
         setupNextcloudServerListener()
         setupNextcloudAccountListener()
         setupClearNextcloudCredentialsListener()
+
+        // TODO WEBDAV 的三个点击事件
+        setupWebdavServerListener()
+        setupWebdavAccountListener()
+        setupClearWebdavCredentialsListener()
+
     }
 
     private fun setupPreferenceObservers() {
@@ -91,6 +103,15 @@ class SyncSettingsFragment : BaseFragment(R.layout.fragment_sync_settings) {
     private fun setupNextcloudAccountListener() = binding.settingNextcloudAccount.setOnClickListener {
         NextcloudAccountDialog().show(childFragmentManager, null)
     }
+    private fun setupWebdavServerListener() = binding.settingWebdavServer.setOnClickListener {
+        //弹出对话框
+        WebdavServerDialog.build(webdavUrl).show(childFragmentManager, null)
+
+    }
+
+    private fun setupWebdavAccountListener() = binding.settingWebdavAccount.setOnClickListener {
+        WebdavAccountDialog().show(childFragmentManager, null)
+    }
 
     private fun setupSyncServiceListener() = binding.settingSyncProvider.setOnClickListener {
         showPreferenceDialog(R.string.preferences_cloud_service, appPreferences.cloudService) { selected ->
@@ -119,7 +140,12 @@ class SyncSettingsFragment : BaseFragment(R.layout.fragment_sync_settings) {
     private fun setupClearNextcloudCredentialsListener() = binding.settingNextcloudClearCredentials.setOnClickListener {
         model.clearNextcloudCredentials()
     }
+    private fun setupClearWebdavCredentialsListener() = binding.settingWebdavClearCredentials.setOnClickListener {
+        model.clearWebdavCredentials()
+    }
     private fun setProviderSettingsVisibility(currentProvider: CloudService) {
+        //TODO
+        Log.i("tangshg","SyncStettingFragment 当前的云服务是$currentProvider")
         binding.layoutNextcloudSettings.isVisible = currentProvider == CloudService.NEXTCLOUD
         binding.layoutGenericSettings.isVisible = currentProvider != CloudService.DISABLED
         binding.layoutWebdavSettings.isVisible = currentProvider == CloudService.WEBDAV

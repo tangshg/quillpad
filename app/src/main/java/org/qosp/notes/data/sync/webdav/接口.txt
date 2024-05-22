@@ -1,0 +1,128 @@
+// 定义Sardine接口，用于操作WebDAV资源
+public interface Sardine {
+
+    // 设置认证信息（用户名、密码，是否使用基本认证）
+    void setCredentials(String username, String password, boolean useBasicAuth);
+
+    // 只设置认证信息（用户名和密码）
+    void setCredentials(String username, String password);
+
+    // 获取资源列表（已废弃）
+    @Deprecated
+    List<DavResource> getResources(String url) throws IOException;
+
+    // 列出指定URL下的所有资源
+    List<DavResource> list(String url) throws IOException;
+
+    // 列出指定URL下的资源，带有深度限制
+    List<DavResource> list(String url, int depth) throws IOException;
+
+    // 列出指定URL下的资源，带有深度限制和属性集
+    List<DavResource> list(String url, int depth, Set<QName> properties) throws IOException;
+
+    // 列出指定URL下的资源，带有深度限制和是否包含隐藏资源
+    List<DavResource> list(String url, int depth, boolean includeHidden) throws IOException;
+
+    // 执行PROPFIND请求，获取资源的属性
+    List<DavResource> propfind(String url, int depth, Set<QName> properties) throws IOException;
+
+    // 执行REPORT请求，根据报告类型返回结果
+    <T> T report(String url, int depth, SardineReport<T> report) throws IOException;
+
+    // 根据搜索条件列出资源
+    List<DavResource> search(String url, String select, String query) throws IOException;
+
+    // 设置自定义属性（已废弃）
+    @Deprecated
+    void setCustomProps(String url, Map<String, String> properties, List<String> propertyNames) throws IOException;
+
+    // 更新资源的属性
+    List<DavResource> patch(String url, Map<QName, String> properties) throws IOException;
+
+    // 更新资源的属性，指定属性列表
+    List<DavResource> patch(String url, Map<QName, String> properties, List<QName> propertyNames) throws IOException;
+
+    // 更新资源的属性，以XML元素形式
+    List<DavResource> patch(String url, List<Element> elements, List<QName> propertyNames) throws IOException;
+
+    // 获取资源的输入流
+    InputStream get(String url) throws IOException;
+
+    // 获取资源的输入流，带有自定义头部信息
+    InputStream get(String url, Map<String, String> headers) throws IOException;
+
+    // 上传资源（字节数组）
+    void put(String url, byte[] data) throws IOException;
+
+    // 上传资源（字节数组），指定内容类型
+    void put(String url, byte[] data, String contentType) throws IOException;
+
+    // 上传资源（文件）
+    void put(String url, File file, String contentType) throws IOException;
+
+    // 上传资源（文件），指定内容类型和是否覆盖
+    void put(String url, File file, String contentType, boolean overwrite) throws IOException;
+
+    // 上传资源（文件），指定内容类型、是否覆盖和ETag
+    void put(String url, File file, String contentType, boolean overwrite, String eTag) throws IOException;
+
+    // 删除资源
+    void delete(String url) throws IOException;
+
+    // 创建目录
+    void createDirectory(String url) throws IOException;
+
+    // 移动资源
+    void move(String sourceUrl, String destinationUrl) throws IOException;
+
+    // 移动资源，指定是否覆盖目标
+    void move(String sourceUrl, String destinationUrl, boolean overwrite) throws IOException;
+
+    // 移动资源，指定是否覆盖目标和源的ETag
+    void move(String sourceUrl, String destinationUrl, boolean overwrite, String sourceETag) throws IOException;
+
+    // 复制资源
+    void copy(String sourceUrl, String destinationUrl) throws IOException;
+
+    // 复制资源，指定是否覆盖目标
+    void copy(String sourceUrl, String destinationUrl, boolean overwrite) throws IOException;
+
+    // 检查资源是否存在
+    boolean exists(String url) throws IOException;
+
+    // 获取资源的锁信息
+    String lock(String url) throws IOException;
+
+    // 获取资源的锁信息，指定锁的生命周期
+    String lock(String url, int timeout) throws IOException;
+
+    // 刷新资源的锁
+    String refreshLock(String url, String lockToken, String ifMatch) throws IOException;
+
+    // 解除资源的锁
+    void unlock(String url, String lockToken) throws IOException;
+
+    // 获取资源的ACL权限信息
+    DavAcl getAcl(String url) throws IOException;
+
+    // 获取资源的配额信息
+    DavQuota getQuota(String url) throws IOException;
+
+    // 设置资源的ACL权限
+    void setAcl(String url, List<DavAce> aces) throws IOException;
+
+    // 获取资源的权限集合
+    List<DavPrincipal> getPrincipals(String url) throws IOException;
+
+    // 获取权限集合集合
+    List<String> getPrincipalCollectionSet(String url) throws IOException;
+
+    // 启用压缩
+    void enableCompression();
+
+    // 禁用压缩
+    void disableCompression();
+
+    // 忽略服务器返回的cookies
+    void ignoreCookies();
+}

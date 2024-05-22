@@ -16,20 +16,20 @@ import org.qosp.notes.preferences.PreferenceRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class webdavViewModel @Inject constructor(
+class WebdavViewModel @Inject constructor(
     private val preferenceRepository: PreferenceRepository,
     private val syncManager: SyncManager,
 ) : ViewModel() {
 
-    val username = preferenceRepository.getEncryptedString(PreferenceRepository.NEXTCLOUD_USERNAME)
-    val password = preferenceRepository.getEncryptedString(PreferenceRepository.NEXTCLOUD_PASSWORD)
+    val username = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_USERNAME)
+    val password = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_PASSWORD)
 
     fun setURL(url: String) = viewModelScope.launch {
         if (!URLUtil.isHttpsUrl(url)) return@launch
 
         val url = if (url.endsWith("/")) url else "$url/"
         preferenceRepository.putEncryptedStrings(
-            PreferenceRepository.NEXTCLOUD_INSTANCE_URL to url,
+            PreferenceRepository.WEBDAV_INSTANCE_URL to url,
         )
     }
 
@@ -37,7 +37,7 @@ class webdavViewModel @Inject constructor(
         val config = NextcloudConfig(
             username = username,
             password = password,
-            remoteAddress = preferenceRepository.getEncryptedString(PreferenceRepository.NEXTCLOUD_INSTANCE_URL).first()
+            remoteAddress = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
         )
 
         val response: BaseResult = withContext(Dispatchers.IO) {
@@ -48,8 +48,8 @@ class webdavViewModel @Inject constructor(
         return response.also {
             if (it == Success) {
                 preferenceRepository.putEncryptedStrings(
-                    PreferenceRepository.NEXTCLOUD_USERNAME to username,
-                    PreferenceRepository.NEXTCLOUD_PASSWORD to password,
+                    PreferenceRepository.WEBDAV_USERNAME to username,
+                    PreferenceRepository.WEBDAV_PASSWORD to password,
                 )
             }
         }
