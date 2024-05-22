@@ -18,6 +18,7 @@ data class WebdavConfig(
     private val password: String, // 密码
 ) : ProviderConfig {
 
+    //TODO 后期删掉，webdav 不需要认证头
     // 计算基础认证信息头，用于HTTP认证
     val credentials = ("Basic " + Base64.encodeToString("$username:$password".toByteArray(), Base64.NO_WRAP)).trim()
 
@@ -34,9 +35,9 @@ data class WebdavConfig(
         @OptIn(ExperimentalCoroutinesApi::class)
         fun fromPreferences(preferenceRepository: PreferenceRepository): Flow<WebdavConfig?> {
             // 从偏好设置获取URL、用户名和密码
-            val url = preferenceRepository.getEncryptedString(PreferenceRepository.NEXTCLOUD_INSTANCE_URL)
-            val username = preferenceRepository.getEncryptedString(PreferenceRepository.NEXTCLOUD_USERNAME)
-            val password = preferenceRepository.getEncryptedString(PreferenceRepository.NEXTCLOUD_PASSWORD)
+            val url = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL)
+            val username = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_USERNAME)
+            val password = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_PASSWORD)
 
             // 构建Flow，确保只有当所有必要信息都非空时才构建WebdavConfig实例
             return url.flatMapLatest { url ->

@@ -28,13 +28,14 @@ import org.qosp.notes.data.sync.nextcloud.model.asNewLocalNote
 import org.qosp.notes.data.sync.nextcloud.model.asNextcloudNote
 import org.qosp.notes.data.sync.nextcloud.testCredentials
 import org.qosp.notes.data.sync.nextcloud.updateNote
+import org.qosp.notes.data.sync.webdav.model.WebdavNote
 import org.qosp.notes.preferences.CloudService
 import retrofit2.HttpException
 
 /**
- * NextcloudManager 类负责与Nextcloud服务器进行同步操作，包括创建、删除、更新笔记。
+ * NextcloudManager 类负责与 webdav 服务器进行同步操作，包括创建、删除、更新笔记。
  *
- * @param nextcloudAPI 用于与Nextcloud服务器通信的API客户端。
+ * @param nextcloudAPI 用于与 webdav 服务器通信的API客户端。
  * @param noteRepository 本地笔记数据的存储库。
  * @param notebookRepository 本地笔记本数据的存储库。
  * @param idMappingRepository 本地和远程笔记ID映射的存储库。
@@ -45,13 +46,17 @@ class WebdavManager(
     private val notebookRepository: NotebookRepository, // 笔记本数据仓库
     private val idMappingRepository: IdMappingRepository, // ID映射数据仓库，记录本地与远程笔记ID对应关系
 ) : SyncProvider {
+
+
     /**
-     * 在Nextcloud服务器上创建新的笔记。
+     * 在 webdav 服务器上创建新的笔记。
      *
      * @param note 要创建的笔记。
      * @param config 配置信息，必须是NextcloudConfig类型。
      * @return 创建笔记的结果。
      */
+
+
     override suspend fun createNote(
         note: Note,
         config: ProviderConfig
@@ -63,7 +68,7 @@ class WebdavManager(
         if (nextcloudNote.id != 0L) return GenericError("Cannot create note that already exists")
 
         return tryCalling {
-            val savedNote = nextcloudAPI.createNote(nextcloudNote, config)
+            val savedNote = nextcloudAPI.createNote(WebdavNote, config)
             idMappingRepository.assignProviderToNote(
                 IdMapping(
                     localNoteId = note.id,

@@ -10,6 +10,7 @@ import kotlinx.serialization.json.jsonObject
 import okhttp3.ResponseBody
 import org.qosp.notes.data.sync.nextcloud.model.NextcloudCapabilities
 import org.qosp.notes.data.sync.nextcloud.model.NextcloudNote
+import org.qosp.notes.data.sync.webdav.model.WebdavNote
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -25,174 +26,90 @@ const val baseURL = "index.php/apps/notes/api/v1/"
  * 定义与Nextcloud笔记应用API交互的接口。
  */
 interface WebdavAPI {
-    /**
-     * 获取所有笔记的API。
-     * @param url 请求的完整URL。
-     * @param auth 授权信息。
-     * @return 笔记列表。
-     */
-    @GET
+
+
+    //定义WebdavAPI接口
+    //获取所有的笔记列表
     suspend fun getNotesAPI(
-        @Url url: String,
-        @Header("Authorization") auth: String,
-    ): List<NextcloudNote>
+        url: String,
+    ): List<WebdavNote>
 
-    /**
-     * 获取指定笔记的API。
-     * @param url 请求的完整URL。
-     * @param auth 授权信息。
-     * @return 指定的笔记。
-     */
-    @GET
+    //获取指定的笔记
     suspend fun getNoteAPI(
-        @Url url: String,
-        @Header("Authorization") auth: String,
-    ): NextcloudNote
+        url: String,
+    ): WebdavNote
 
-    /**
-     * 创建新笔记的API。
-     * @param note 要创建的笔记内容。
-     * @param url 请求的完整URL。
-     * @param auth 授权信息。
-     * @return 创建的笔记。
-     */
-    @POST
+    //创建一个笔记
     suspend fun createNoteAPI(
-        @Body note: NextcloudNote,
-        @Url url: String,
-        @Header("Authorization") auth: String,
-    ): NextcloudNote
+        note: WebdavNote,
+        url: String,
+    ): WebdavNote
 
-    /**
-     * 更新指定笔记的API。
-     * @param note 要更新的笔记内容。
-     * @param etag 该笔记的Etag，用于实现乐观并发控制。
-     * @param url 请求的完整URL。
-     * @param auth 授权信息。
-     * @return 更新后的笔记。
-     */
-    @PUT
+    //更新一个笔记
     suspend fun updateNoteAPI(
-        @Body note: NextcloudNote,
-        @Url url: String,
-        @Header("If-Match") etag: String,
-        @Header("Authorization") auth: String,
-    ): NextcloudNote
+        note: WebdavNote,
+        url: String,
+        etag: String
+    ): WebdavNote
 
-    /**
-     * 删除指定笔记的API。
-     * @param url 请求的完整URL。
-     * @param auth 授权信息。
-     */
-    @DELETE
+    //删除一个笔记
     suspend fun deleteNoteAPI(
-        @Url url: String,
-        @Header("Authorization") auth: String,
+        url: String,
     )
 
-    /**
-     * 获取所有能力的API，用于了解服务器支持的功能。
-     * @param url 请求的完整URL。
-     * @param auth 授权信息。
-     * @return 服务器能力的响应体。
-     */
-    @Headers(
-        "OCS-APIRequest: true",
-        "Accept: application/json"
+
+
+}//上面是定义的接口
+
+/**
+ * 这段代码使用了Kotlin的特性：
+ * 挂起函数 (suspend 关键字)：suspend 关键字表明这个函数是协程中的挂起函数，它可以在执行过程中暂停，并在稍后恢复而不会阻塞线程。挂起函数只能在协程上下文中被调用。
+ * 函数签名：getNotes 是函数名，它接受一个 WebdavConfig 类型的参数并返回一个 List<NextcloudNote>。
+ * 调用其他函数：函数体中调用了 getNotesAPI 函数，传入了两个参数：
+ * url 参数是通过组合 config.remoteAddress、baseURL 和 "notes" 字符串得到的。
+ * auth 参数是 config.credentials，看起来是用来进行身份验证的信息。
+ * 类型安全：由于 getNotesAPI 返回 List<NextcloudNote>，整个挂起函数也返回同样的类型，这保证了类型一致性。
+ * 这个函数的功能是在给定的WebDAV配置下获取Nextcloud笔记，并返回一个笔记列表。具体实现细节（如HTTP请求、网络操作等）则隐藏在 getNotesAPI 函数内部。
+**/
+suspend fun WebdavAPI.getNotes(config: WebdavConfig): List<WebdavNote> {
+    return getNotesAPI(
+        // 构建获取笔记列表的完整URL
+        //TODO webdav 不需要添加 baseURL
+        url = config.remoteAddress + baseURL + "notes",
+        //Webdav 不需要认证信息
+        //auth = config.credentials,
     )
-    @GET
-    suspend fun getAllCapabilitiesAPI(
-        @Url url: String,
-        @Header("Authorization") auth: String,
-    ): ResponseBody
 }
-
-/**
- * 通过 API 获取 Nextcloud 笔记应用的能力信息。
- * @param config 包含Nextcloud的配置信息。
- * @return Nextcloud笔记应用的能力信息。
- */
-//TODO 这里不需要，删除
-suspend fun WebdavAPI.getNotesCapabilities(config: NextcloudConfig): NextcloudCapabilities? {
-    // 构建获取能力信息的完整URL
-    val endpoint = "ocs/v2.php/cloud/capabilities"
-    val fullUrl = config.remoteAddress + endpoint
-
-    // 发送请求并解析响应
-    val response = withContext(Dispatchers.IO) {
-        getAllCapabilitiesAPI(url = fullUrl, auth = config.credentials).string()
-    }
-
-    // 从响应中提取笔记应用的能力信息
-    val element = Json
-        .parseToJsonElement(response).jsonObject["ocs"]?.jsonObject
-        ?.get("data")?.jsonObject
-        ?.get("capabilities")?.jsonObject
-        ?.get("notes")
-    return element?.let { Json.decodeFromJsonElement<NextcloudCapabilities>(it) }
+//获取笔记
+suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
+    return getNoteAPI(
+        url = config.remoteAddress + baseURL + "notes/$noteId",
+        //Webdav 不需要认证信息
+        //auth = config.credentials,
+    )
 }
-
-/**
- * 通过API删除指定的笔记。
- * @param note 要删除的笔记。
- * @param config 包含Nextcloud的配置信息。
- */
-suspend fun WebdavAPI.deleteNote(note: NextcloudNote, config: NextcloudConfig) {
+//删除笔记文件
+suspend fun WebdavAPI.deleteNote(note: WebdavNote, config: WebdavConfig) {
     deleteNoteAPI(
         url = config.remoteAddress + baseURL + "notes/${note.id}",
-        auth = config.credentials,
+        //auth = config.credentials,
     )
 }
-
-/**
- * 通过API更新指定的笔记。
- * @param note 要更新的笔记。
- * @param etag 该笔记的Etag。
- * @param config 包含Nextcloud的配置信息。
- * @return 更新后的笔记。
- */
-suspend fun WebdavAPI.updateNote(note: NextcloudNote, etag: String, config: NextcloudConfig): NextcloudNote {
+//升级笔记
+suspend fun WebdavAPI.updateNote(note: WebdavNote, etag: String, config: WebdavConfig): WebdavNote {
     return updateNoteAPI(
         note = note,
         url = config.remoteAddress + baseURL + "notes/${note.id}",
         etag = "\"$etag\"",
-        auth = config.credentials,
+        //auth = config.credentials,
     )
 }
-
-/**
- * 通过API创建新笔记。
- * @param note 要创建的笔记。
- * @param config 包含Nextcloud的配置信息。
- * @return 创建的笔记。
- */
-suspend fun WebdavAPI.createNote(note: NextcloudNote, config: NextcloudConfig): NextcloudNote {
-    return createNoteAPI(
+//创建新笔记
+suspend fun WebdavAPI.createNote(note: WebdavNote, config: WebdavConfig): WebdavNote {
+    return createNoteAPI (
         note = note,
         url = config.remoteAddress + baseURL + "notes",
-        auth = config.credentials,
+        //auth = config.credentials,
     )
 }
 
-/**
- * 通过API获取所有笔记。
- * @param config 包含Nextcloud的配置信息。
- * @return 笔记列表。
- */
-suspend fun WebdavAPI.getNotes(config: NextcloudConfig): List<NextcloudNote> {
-    return getNotesAPI(
-        url = config.remoteAddress + baseURL + "notes",
-        auth = config.credentials,
-    )
-}
-
-/**
- * 测试配置的凭证是否有效。
- * @param config 包含Nextcloud的配置信息。
- */
-suspend fun WebdavAPI.testCredentials(config: NextcloudConfig) {
-    getNotesAPI(
-        url = config.remoteAddress + baseURL + "notes",
-        auth = config.credentials,
-    )
-}
