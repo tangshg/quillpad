@@ -66,7 +66,11 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
 
             //判空操作，弹出 Toast 进行提示
             if (username.isBlank() or password.isBlank()) {
-                Toast.makeText(requireContext(), getString(R.string.message_credentials_cannot_be_blank), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.message_credentials_cannot_be_blank),
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setButton
             }
 
@@ -78,8 +82,11 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
 
 
                 //如果连接成功，则提示连接成功，并关闭对话框
-                val result = model.webdavAuthenticate(username, password)
+                Log.i("tangshg", "WebdavAccountDialog 身份信息验证  1")
+                val result = model.authenticate(username, password)
+                Log.i("tangshg","WebdavAccountDialog  身份信息验证的结果{$result} 最后一步")
 
+                //返回的消息用于弹出 toast ，进行提示
                 val messageResId = when (result) {
                     Success -> R.string.message_logged_in_successfully
                     is ApiError -> TODO()
@@ -92,34 +99,12 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
                     Unauthorized -> TODO()
                 }
                 if (messageResId != R.string.message_something_went_wrong) { // known error or success
-                Toast.makeText(requireContext(), getString(messageResId), Toast.LENGTH_SHORT).show()
-                if (result == Success) dismiss()
-            } else { // unknown error
-                val text = getString(R.string.message_something_went_wrong) + "\n" + result.message
-                Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
-            }
-
-                /*
-                //如果连接成功，则提示连接成功，并关闭对话框
-                //首先对账号进行检验
-                val result = model.authenticate(username, password)
-
-                val messageResId = when (result) {
-                    NoConnectivity -> R.string.message_internet_not_available
-                    ServerNotSupported -> R.string.message_server_not_compatible
-                    Success -> R.string.message_logged_in_successfully
-                    Unauthorized -> R.string.message_invalid_credentials
-                    else -> R.string.message_something_went_wrong
-                }
-                if (messageResId != R.string.message_something_went_wrong) { // known error or success
                     Toast.makeText(requireContext(), getString(messageResId), Toast.LENGTH_SHORT).show()
                     if (result == Success) dismiss()
                 } else { // unknown error
                     val text = getString(R.string.message_something_went_wrong) + "\n" + result.message
                     Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
                 }
-
-                 */
             }
         }
 

@@ -30,6 +30,8 @@ import retrofit2.HttpException
  * @param notebookRepository 本地笔记本数据的存储库。
  * @param idMappingRepository 本地和远程笔记ID映射的存储库。
  */
+
+//在哪里调用它？
 class WebdavManager(
     private val webdavAPI: WebdavAPI, // Webdav API客户端，用于与服务器交互
     private val noteRepository: NoteRepository, // 笔记数据仓库
@@ -37,6 +39,7 @@ class WebdavManager(
     private val idMappingRepository: IdMappingRepository, // ID映射数据仓库，记录本地与远程笔记ID对应关系
 ) : SyncProvider {
 
+    //继承了这个接口，就要实现这个接口的所有方法
     /**
      * 在 webdav 服务器上创建新的笔记。
      * @param note 要创建的笔记。
@@ -106,7 +109,6 @@ class WebdavManager(
         }
     }
 
-
     /**
      * 将笔记移至回收站。
      *
@@ -128,7 +130,6 @@ class WebdavManager(
         }
     }
 
-
     /**
      * 从回收站中恢复笔记。
      *
@@ -137,7 +138,6 @@ class WebdavManager(
      * @return 恢复笔记的结果。
      */
     override suspend fun restoreNote(note: Note, config: ProviderConfig) = createNote(note, config)
-
 
     /**
      * 更新Webdav服务器上的笔记。
@@ -161,21 +161,23 @@ class WebdavManager(
         }
     }
 
-
     /**
      * 验证配置信息的有效性并进行身份验证。
      *
      * @param config 配置信息，必须是 WebdavConfig类型。
      * @return 验证结果。
      */
+
+    //这里是 provider 接口的实现
     override suspend fun authenticate(config: ProviderConfig): BaseResult {
+        //如果接收的不是 webdavConfig 类型，返回无效配置
         if (config !is WebdavConfig) return InvalidConfig
 
+        //如果是 webdavConfig 类型，就调用 webdavAPI 的 testCredentials 方法进行身份验证
         return tryCalling {
             webdavAPI.testCredentials(config)
         }
     }
-
 
     /**
      * 检查服务器是否兼容Webdav服务。
@@ -197,9 +199,6 @@ class WebdavManager(
 //        }
     }
 
-
-
-
     /**
      * 与Webdav服务器进行同步。
      *
@@ -210,8 +209,6 @@ class WebdavManager(
 
         //如果配置信息不是 WebdavConfig 类型，则返回InvalidConfig，说明是无效的配置
         if (config !is WebdavConfig) return InvalidConfig
-
-
 
         /**
          * 处理本地和远程笔记之间的冲突。
@@ -245,9 +242,6 @@ class WebdavManager(
                 )
             }
         }
-
-
-
 
 
         return tryCalling {
