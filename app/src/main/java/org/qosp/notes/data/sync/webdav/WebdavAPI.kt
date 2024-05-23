@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import okhttp3.ResponseBody
+import org.qosp.notes.data.sync.nextcloud.NextcloudAPI
 import org.qosp.notes.data.sync.nextcloud.model.NextcloudCapabilities
 import org.qosp.notes.data.sync.nextcloud.model.NextcloudNote
 import org.qosp.notes.data.sync.webdav.model.WebdavNote
@@ -54,6 +55,8 @@ interface WebdavAPI {
     suspend fun deleteNoteAPI(
         url: String,
     )
+
+
 }//上面是定义的接口
 
 /**
@@ -97,7 +100,7 @@ suspend fun WebdavAPI.deleteNote(note: WebdavNote, config: WebdavConfig) {
 suspend fun WebdavAPI.updateNote(note: WebdavNote, etag: String, config: WebdavConfig): WebdavNote {
     return updateNoteAPI(
         note = note,
-        url = config.remoteAddress + baseURL + "notes/${note.id}",
+        url = config.remoteAddress + org.qosp.notes.data.sync.nextcloud.baseURL + "notes/${note.id}",
         etag = "\"$etag\"",
         //auth = config.credentials,
     )
@@ -105,10 +108,19 @@ suspend fun WebdavAPI.updateNote(note: WebdavNote, etag: String, config: WebdavC
 
 //创建新笔记
 suspend fun WebdavAPI.createNote(note: WebdavNote, config: WebdavConfig): WebdavNote {
+
     return createNoteAPI (
         note = note,
         url = config.remoteAddress + baseURL + "notes",
         //auth = config.credentials,
     )
 }
+
+suspend fun WebdavAPI.testCredentials(config: WebdavConfig) {
+    getNotesAPI(
+        url = config.remoteAddress + org.qosp.notes.data.sync.nextcloud.baseURL + "notes",
+        //auth = config.credentials,
+    )
+}
+
 

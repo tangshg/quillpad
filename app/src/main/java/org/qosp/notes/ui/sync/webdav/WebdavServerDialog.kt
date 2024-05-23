@@ -12,17 +12,17 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.qosp.notes.R
-import org.qosp.notes.databinding.DialogNextcloudServerBinding
 import org.qosp.notes.databinding.DialogWebdavServerBinding
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.ui.common.BaseDialog
 import org.qosp.notes.ui.common.setButton
-import org.qosp.notes.ui.sync.nextcloud.NextcloudViewModel
 import org.qosp.notes.ui.utils.requestFocusAndKeyboard
 
 @AndroidEntryPoint
 class WebdavServerDialog : BaseDialog<DialogWebdavServerBinding>() {
+
     private val model: WebdavViewModel by activityViewModels()
+
     private var url: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +40,6 @@ class WebdavServerDialog : BaseDialog<DialogWebdavServerBinding>() {
             val url = binding.editTextServerUrl.text?.toString()?.trim() ?: ""
             if (URLUtil.isHttpsUrl(url)) {
                 model.setURL(url)
-
-                //TODO log日志
-                Log.i("tangshg","当前存储的nextcloudUrl为：$PreferenceRepository.NEXTCLOUD_INSTANCE_URL")
-
                 return@setButton dismiss()
             }
             Toast.makeText(requireContext(), getString(R.string.message_not_valid_https), Toast.LENGTH_SHORT).show()

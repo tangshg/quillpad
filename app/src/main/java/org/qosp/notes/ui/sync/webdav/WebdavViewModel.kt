@@ -14,10 +14,10 @@ import kotlinx.coroutines.withContext
 import org.qosp.notes.data.sync.core.BaseResult
 import org.qosp.notes.data.sync.core.Success
 import org.qosp.notes.data.sync.core.SyncManager
-import org.qosp.notes.data.sync.nextcloud.NextcloudConfig
 import org.qosp.notes.data.sync.webdav.WebdavConfig
 import org.qosp.notes.preferences.PreferenceRepository
 import javax.inject.Inject
+
 
 @HiltViewModel
 class WebdavViewModel @Inject constructor(
@@ -29,34 +29,41 @@ class WebdavViewModel @Inject constructor(
     val password = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_PASSWORD)
 
 
-    //设置 URL，保存到偏好仓库
+    //设置 URL，保存到仓库
     fun setURL(url: String) = viewModelScope.launch {
         if (!URLUtil.isHttpsUrl(url)) return@launch
 
         val url = if (url.endsWith("/")) url else "$url/"
+
+        //将网址加密后保存到仓库
         preferenceRepository.putEncryptedStrings(
             PreferenceRepository.WEBDAV_INSTANCE_URL to url,
         )
+
+        //TODO 这里仅仅作为测试，通过 log 查看保存的网址是否正确
+        val flow = preferenceRepository.getEncryptedString(
+            PreferenceRepository.WEBDAV_INSTANCE_URL
+        )
+        Log.i("tangshg", "webdavViewModel 当前保存的网址是"+flow.first())
     }
 
 
-
-
-    suspend fun WebdavAuthenticate(username: String,password: String) = withContext(Dispatchers.IO) {
+    /// authenticate 中文：进行身份确认
+    suspend fun webdavAuthenticate(username: String, password: String) = withContext(Dispatchers.IO) {
         //获取 webdav 的网址
         val url = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
         //TODO 当前仓库中的网址为
-        Log.i("tangshg",url)
+        Log.i("tangshg", url)
 
         //开始连接操作
         val sardine: Sardine = OkHttpSardine() //实例化
         sardine.setCredentials(username, password)
 
-        //TODO 这里写死了连接地址，后续需要改成配置文件
+
         val resources = sardine.list(url)
 
 
-        Log.i("tangshg","$resources")
+        Log.i("tangshg", "$resources")
 
         if (resources.isNotEmpty()) {
             // 认证成功
@@ -98,8 +105,7 @@ class WebdavViewModel @Inject constructor(
             //取消检查服务器的兼容检查
             if (loginResult == Success) {
                 syncManager.isServerCompatible(config)
-            }
-            else
+            } else
                 loginResult
         }
 

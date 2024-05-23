@@ -1,15 +1,12 @@
 package org.qosp.notes.ui.sync.webdav
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.thegrizzlylabs.sardineandroid.Sardine
-import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -67,7 +64,7 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
             lifecycleScope.launch {
 
 
-                model.WebdavAuthenticate(username, password)
+                model.webdavAuthenticate(username, password)
 
 
                 /*
