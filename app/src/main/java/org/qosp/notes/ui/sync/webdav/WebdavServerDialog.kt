@@ -3,7 +3,6 @@ package org.qosp.notes.ui.sync.webdav
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.webkit.URLUtil
@@ -13,7 +12,6 @@ import androidx.fragment.app.activityViewModels
 import dagger.hilt.android.AndroidEntryPoint
 import org.qosp.notes.R
 import org.qosp.notes.databinding.DialogWebdavServerBinding
-import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.ui.common.BaseDialog
 import org.qosp.notes.ui.common.setButton
 import org.qosp.notes.ui.utils.requestFocusAndKeyboard

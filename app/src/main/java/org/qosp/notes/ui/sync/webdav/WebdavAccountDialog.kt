@@ -1,6 +1,7 @@
 package org.qosp.notes.ui.sync.webdav
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
@@ -11,7 +12,16 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.qosp.notes.R
+import org.qosp.notes.data.sync.core.ApiError
+import org.qosp.notes.data.sync.core.GenericError
+import org.qosp.notes.data.sync.core.InvalidConfig
+import org.qosp.notes.data.sync.core.NoConnectivity
+import org.qosp.notes.data.sync.core.OperationNotSupported
+import org.qosp.notes.data.sync.core.ServerNotSupported
+import org.qosp.notes.data.sync.core.Success
 import org.qosp.notes.data.sync.core.SyncManager
+import org.qosp.notes.data.sync.core.SyncingNotEnabled
+import org.qosp.notes.data.sync.core.Unauthorized
 import org.qosp.notes.databinding.DialogWebdavAccountBinding
 import org.qosp.notes.ui.common.BaseDialog
 import org.qosp.notes.ui.common.setButton
@@ -21,6 +31,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
+
     private val model: WebdavViewModel by activityViewModels()
 
     private var username = ""
@@ -34,10 +45,12 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         dialog.setTitle(getString(R.string.preferences_webdav_account))
 
-        // viewModel 中读数并设置输入框
+        // 从 viewModel 中查询当前存储的账号和密码
         lifecycleScope.launch {
             username = model.username.first()
             password = model.password.first()
+
+            Log.i("tangshg", "WebdavAccountDialog 当前账号和密码是  username: $username, password: $password")
 
             if (username.isNotBlank() && password.isNotBlank()) {
                 binding.editTextUsername.setText(username)
@@ -64,13 +77,31 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
             lifecycleScope.launch {
 
 
-                model.webdavAuthenticate(username, password)
+                //如果连接成功，则提示连接成功，并关闭对话框
+                val result = model.webdavAuthenticate(username, password)
 
+                val messageResId = when (result) {
+                    Success -> R.string.message_logged_in_successfully
+                    is ApiError -> TODO()
+                    is GenericError -> TODO()
+                    InvalidConfig -> TODO()
+                    NoConnectivity -> TODO()
+                    OperationNotSupported -> TODO()
+                    ServerNotSupported -> TODO()
+                    SyncingNotEnabled -> TODO()
+                    Unauthorized -> TODO()
+                }
+                if (messageResId != R.string.message_something_went_wrong) { // known error or success
+                Toast.makeText(requireContext(), getString(messageResId), Toast.LENGTH_SHORT).show()
+                if (result == Success) dismiss()
+            } else { // unknown error
+                val text = getString(R.string.message_something_went_wrong) + "\n" + result.message
+                Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
+            }
 
                 /*
                 //如果连接成功，则提示连接成功，并关闭对话框
                 //首先对账号进行检验
-                //TODO authenticate 函数
                 val result = model.authenticate(username, password)
 
                 val messageResId = when (result) {
