@@ -24,7 +24,6 @@ import androidx.palette.graphics.Palette
 import coil.load
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerControlView
 import com.google.android.exoplayer2.util.Util
 import dagger.hilt.android.AndroidEntryPoint

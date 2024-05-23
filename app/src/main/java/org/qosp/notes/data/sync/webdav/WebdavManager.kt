@@ -39,6 +39,17 @@ class WebdavManager(
     private val idMappingRepository: IdMappingRepository, // ID映射数据仓库，记录本地与远程笔记ID对应关系
 ) : SyncProvider {
 
+    //这里是 provider 接口的实现
+    override suspend fun authenticate(config: ProviderConfig): BaseResult {
+        //如果接收的不是 webdavConfig 类型，返回无效配置
+        if (config !is WebdavConfig) return InvalidConfig
+
+        //如果是 webdavConfig 类型，就调用 webdavAPI 的 testCredentials 方法进行身份验证
+        return tryCalling {
+            webdavAPI.testCredentials(config)
+        }
+    }
+
     //继承了这个接口，就要实现这个接口的所有方法
     /**
      * 在 webdav 服务器上创建新的笔记。
@@ -168,16 +179,7 @@ class WebdavManager(
      * @return 验证结果。
      */
 
-    //这里是 provider 接口的实现
-    override suspend fun authenticate(config: ProviderConfig): BaseResult {
-        //如果接收的不是 webdavConfig 类型，返回无效配置
-        if (config !is WebdavConfig) return InvalidConfig
 
-        //如果是 webdavConfig 类型，就调用 webdavAPI 的 testCredentials 方法进行身份验证
-        return tryCalling {
-            webdavAPI.testCredentials(config)
-        }
-    }
 
     /**
      * 检查服务器是否兼容Webdav服务。

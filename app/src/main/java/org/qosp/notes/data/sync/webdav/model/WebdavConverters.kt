@@ -1,7 +1,6 @@
 package org.qosp.notes.data.sync.webdav.model
 
 import org.qosp.notes.data.model.Note
-import org.qosp.notes.data.sync.nextcloud.model.NextcloudNote
 
 /**
  * 将 Note 对象转换为 WebdavNote 对象。

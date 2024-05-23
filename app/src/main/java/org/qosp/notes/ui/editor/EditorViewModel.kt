@@ -27,7 +27,14 @@ import org.qosp.notes.data.model.Notebook
 import org.qosp.notes.data.repo.NoteRepository
 import org.qosp.notes.data.repo.NotebookRepository
 import org.qosp.notes.data.sync.core.SyncManager
-import org.qosp.notes.preferences.*
+import org.qosp.notes.preferences.DateFormat
+import org.qosp.notes.preferences.MoveCheckedItems
+import org.qosp.notes.preferences.NewNotesSyncable
+import org.qosp.notes.preferences.OpenMediaIn
+import org.qosp.notes.preferences.PreferenceRepository
+import org.qosp.notes.preferences.ShowDate
+import org.qosp.notes.preferences.ShowFabChangeMode
+import org.qosp.notes.preferences.TimeFormat
 import java.time.Instant
 import javax.inject.Inject
 

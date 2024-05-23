@@ -36,7 +36,6 @@ import org.qosp.notes.ui.recorder.RECORD_CODE
 import org.qosp.notes.ui.recorder.RecordAudioDialog
 import org.qosp.notes.ui.utils.ChooseFilesContract
 import org.qosp.notes.ui.utils.TakePictureContract
-import org.qosp.notes.ui.utils.launch
 import org.qosp.notes.ui.utils.navigateSafely
 import org.qosp.notes.ui.utils.viewBinding
 import javax.inject.Inject

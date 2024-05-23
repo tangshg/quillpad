@@ -17,7 +17,9 @@ import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.repo.IdMappingRepository
 import org.qosp.notes.data.sync.nextcloud.NextcloudConfig
 import org.qosp.notes.data.sync.webdav.WebdavConfig
-import org.qosp.notes.preferences.CloudService.*
+import org.qosp.notes.preferences.CloudService.DISABLED
+import org.qosp.notes.preferences.CloudService.NEXTCLOUD
+import org.qosp.notes.preferences.CloudService.WEBDAV
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.preferences.SyncMode
 import org.qosp.notes.ui.utils.ConnectionManager
@@ -79,7 +81,6 @@ class SyncManager(
         }
     }
 
-
     /**
      * 共享的同步配置状态。
      *
@@ -89,7 +90,6 @@ class SyncManager(
      */
     val config = prefs.map { prefs -> prefs.config }
         .stateIn(syncingScope, SharingStarted.WhileSubscribed(5000), null)
-
 
     /**
      * 消息处理器，用于处理来自UI或其他组件的消息，触发相应的同步操作。

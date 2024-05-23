@@ -1,41 +1,23 @@
 package org.qosp.notes.data.sync.webdav
 
-import org.qosp.notes.data.sync.nextcloud.NextcloudConfig
-
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import okhttp3.ResponseBody
-import org.qosp.notes.data.sync.nextcloud.NextcloudAPI
-import org.qosp.notes.data.sync.nextcloud.model.NextcloudCapabilities
-import org.qosp.notes.data.sync.nextcloud.model.NextcloudNote
+import com.thegrizzlylabs.sardineandroid.Sardine
 import org.qosp.notes.data.sync.webdav.model.WebdavNote
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Headers
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Url
-
-const val baseURL = "index.php/apps/notes/api/v1/"
 
 /**
- * 定义与Nextcloud笔记应用API交互的接口。
+ * 定义与 webdav 笔记应用API交互的接口。
+ * 如果有继承这个接口，需要实现这个接口的全部方法+
+ * 一共是五个接口，分别是
+ * getNotesAPI
+ * getNoteAPI
+ * createNoteAPI
+ * updateNoteAPI
+ * deleteNoteAPI
  */
 interface WebdavAPI {
 
-    //获取所有的笔记列表
-    suspend fun getNotesAPI(
-        url: String,
-    ): List<WebdavNote>
-
     //获取指定的笔记
     suspend fun getNoteAPI(
-        url: String,
+        url: String
     ): WebdavNote
 
     //创建一个笔记
@@ -56,8 +38,28 @@ interface WebdavAPI {
         url: String,
     )
 
+    //val sardine: Sardine = OkHttpSardine()
+    //sardine.setCredentials(username, password)
+    //val resources = sardine.list(url)
+
+    //获取所有的笔记列表
+    suspend fun getNotesAPI(
+        url: String,
+        sardine: Sardine
+    ): List<WebdavNote>
 
 }//上面是定义的接口
+
+//test Credentials 中文翻译 测试证书
+//定义的一个函数，函数名为 testCredentials，接收一个参数 config，返回值为 Unit。
+suspend fun WebdavAPI.testCredentials(config: WebdavConfig) {
+
+    getNotesAPI(
+        url = config.remoteAddress  + "notes",
+        sardine = config.sardine
+    )
+}
+
 
 /**
  * 这段代码使用了Kotlin的特性：
@@ -75,16 +77,15 @@ suspend fun WebdavAPI.getNotes(config: WebdavConfig): List<WebdavNote> {
     return getNotesAPI(
         // 构建获取笔记列表的完整URL
         //TODO webdav 不需要添加 baseURL
-        url = config.remoteAddress + baseURL + "notes",
-        //Webdav 不需要认证信息
-        //auth = config.credentials,
+        url = config.remoteAddress  + "notes",
+        sardine = config.sardine
     )
 }
 
 //获取笔记
 suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
     return getNoteAPI(
-        url = config.remoteAddress + baseURL + "notes/$noteId",
+        url = config.remoteAddress  + "notes/$noteId",
         //Webdav 不需要认证信息
         //auth = config.credentials,
     )
@@ -93,7 +94,7 @@ suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
 //删除笔记文件
 suspend fun WebdavAPI.deleteNote(note: WebdavNote, config: WebdavConfig) {
     deleteNoteAPI(
-        url = config.remoteAddress + baseURL + "notes/${note.id}",
+        url = config.remoteAddress  + "notes/${note.id}",
         //auth = config.credentials,
     )
 }
@@ -102,7 +103,7 @@ suspend fun WebdavAPI.deleteNote(note: WebdavNote, config: WebdavConfig) {
 suspend fun WebdavAPI.updateNote(note: WebdavNote, etag: String, config: WebdavConfig): WebdavNote {
     return updateNoteAPI(
         note = note,
-        url = config.remoteAddress + org.qosp.notes.data.sync.nextcloud.baseURL + "notes/${note.id}",
+        url = config.remoteAddress  + "notes/${note.id}",
         etag = "\"$etag\"",
         //auth = config.credentials,
     )
@@ -113,17 +114,10 @@ suspend fun WebdavAPI.createNote(note: WebdavNote, config: WebdavConfig): Webdav
 
     return createNoteAPI (
         note = note,
-        url = config.remoteAddress + baseURL + "notes",
+        url = config.remoteAddress  + "notes",
         //auth = config.credentials,
     )
 }
 
-//test Credentials 中文翻译 测试证书
-suspend fun WebdavAPI.testCredentials(config: WebdavConfig) {
-    getNotesAPI(
-        url = config.remoteAddress + org.qosp.notes.data.sync.nextcloud.baseURL + "notes",
-        //auth = config.credentials,
-    )
-}
 
 

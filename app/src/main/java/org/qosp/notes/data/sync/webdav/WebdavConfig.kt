@@ -1,6 +1,8 @@
 package org.qosp.notes.data.sync.webdav
 
 import android.util.Base64
+import com.thegrizzlylabs.sardineandroid.Sardine
+import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -17,6 +19,15 @@ data class WebdavConfig(
     override val username: String, // 用户名
     private val password: String, // 密码
 ) : ProviderConfig {
+
+    //在这里加上 sardine 实例
+    val sardine: Sardine = OkHttpSardine()
+
+    //sardine.setCredentials(username, password)
+    //val resources = sardine.list(url)
+
+
+
 
     //TODO 后期删掉，webdav 不需要认证头
     // 计算基础认证信息头，用于HTTP认证
