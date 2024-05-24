@@ -36,6 +36,7 @@ securityCrypto = "1.1.0-alpha04"
 swiperefreshlayout = "1.1.0"
 work = "2.7.1"
 sardineAndroid= "v0.8"
+transportRuntime = "3.3.0"
 
 [libraries]
 androidxHiltCompiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidxHilt" }
@@ -91,6 +92,7 @@ swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout"
 workRuntimeKtx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 workTesting = { module = "androidx.work:work-testing", version.ref = "work" }
 sardineAndroid= { module = "com.github.thegrizzlylabs:sardine-android", version.ref = "sardineAndroid" }
+transport-runtime = { group = "com.google.android.datatransport", name = "transport-runtime", version.ref = "transportRuntime" }
 
 [bundles]
 kotlin-deps = ["kotlin-serialization-json"]
