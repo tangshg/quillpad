@@ -17,7 +17,7 @@ import org.qosp.notes.preferences.PreferenceRepository
 data class WebdavConfig(
     override val remoteAddress: String, // 远程地址
     override val username: String, // 用户名
-    private val password: String, // 密码
+    val password: String, // 密码
 ) : ProviderConfig {
 
     //在这里加上 sardine 实例
@@ -25,8 +25,6 @@ data class WebdavConfig(
 
     //sardine.setCredentials(username, password)
     //val resources = sardine.list(url)
-
-
 
 
     //TODO 后期删掉，webdav 不需要认证头

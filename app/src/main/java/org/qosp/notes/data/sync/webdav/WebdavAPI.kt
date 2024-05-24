@@ -86,8 +86,6 @@ suspend fun WebdavAPI.getNotes(config: WebdavConfig): List<WebdavNote> {
 suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
     return getNoteAPI(
         url = config.remoteAddress  + "notes/$noteId",
-        //Webdav 不需要认证信息
-        //auth = config.credentials,
     )
 }
 
@@ -95,7 +93,6 @@ suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
 suspend fun WebdavAPI.deleteNote(note: WebdavNote, config: WebdavConfig) {
     deleteNoteAPI(
         url = config.remoteAddress  + "notes/${note.id}",
-        //auth = config.credentials,
     )
 }
 
@@ -105,7 +102,6 @@ suspend fun WebdavAPI.updateNote(note: WebdavNote, etag: String, config: WebdavC
         note = note,
         url = config.remoteAddress  + "notes/${note.id}",
         etag = "\"$etag\"",
-        //auth = config.credentials,
     )
 }
 
@@ -115,7 +111,6 @@ suspend fun WebdavAPI.createNote(note: WebdavNote, config: WebdavConfig): Webdav
     return createNoteAPI (
         note = note,
         url = config.remoteAddress  + "notes",
-        //auth = config.credentials,
     )
 }
 
