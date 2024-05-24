@@ -39,6 +39,9 @@ class PreferenceRepository(
      *
      * @return Flow类型，包含应用的所有偏好设置 [AppPreferences]。
      */
+
+    //这里定义了一个函数 getAll，返回值是 Flow<AppPreferences> 类型。
+
     fun getAll(): Flow<AppPreferences> {
         return dataStore.data
             .catch {

@@ -32,6 +32,8 @@ import org.qosp.notes.ui.utils.ConnectionManager
  * @param connectionManager 连接管理器，用于检查网络连接状态。
  * @param cloudManager 云服务管理器，实现与服务器的交互。
  * @param syncingScope 异步操作的范围，用于管理协程。
+ *
+ * TODO 使用 SyncManager 时，一定要注意 传入的那个 cloudManager 对象
  */
 class SyncManager(
     private val preferenceRepository: PreferenceRepository,
@@ -52,6 +54,12 @@ class SyncManager(
     // 用于显式启用实验性的协程库 API。这表明代码中使用了一些可能尚未稳定、未来版本可能会改变的特性。
     // 在给定的代码片段中，添加这个注解表示开发者知道他们正在使用 ExperimentalCoroutinesApi 中的实验性功能，并愿意承担可能的更改风险
     @OptIn(ExperimentalCoroutinesApi::class)
+
+    // 定义了一个 Flow<SyncPrefs> 类型的变量 prefs，用于存储同步配置信息。
+    // 通过 preferenceRepository.getAll() 方法获取用户偏好设置
+    // 这里注意：getAll 的返回值是 Flow<AppPreferences> 类型，表示用户偏好设置。
+    // 所以需要转换成 Flow<SyncPrefs> 类型。通过 flatMapLatest 操作符 来实现
+    // flatMapLatest 操作符将每个设置转换为 Flow<SyncPrefs>。
     val prefs: Flow<SyncPrefs> = preferenceRepository.getAll().flatMapLatest {
 
         prefs ->
@@ -63,18 +71,26 @@ class SyncManager(
         when (prefs.cloudService) {
 
             DISABLED ->
+                // 如果用户禁用了同步，则返回一个 Flow<SyncPrefs>，其中启用同步为 false，配置为 null
                 flowOf(
                     SyncPrefs(false, null, prefs.syncMode, null)
                 )
 
             NEXTCLOUD -> {
+                // 如果用户选择了 Nextcloud 服务，则返回一个 Flow<SyncPrefs>，其中启用同步为 true，配置为 NextcloudConfig
+                //NextcloudConfig.fromPreferences 是一个静态方法，返回值是 Flow<NextcloudConfig?>
+                //使用 map 操作符将 NextcloudConfig 转换为 SyncPrefs
                 NextcloudConfig.fromPreferences(preferenceRepository).map { config ->
+                    Log.i("","")
                     SyncPrefs(true, cloudManager, prefs.syncMode, config)
+
                 }
             }
 
             WEBDAV ->{
+                // 如果用户选择了 WebDAV 服务，则返回一个 Flow<SyncPrefs>，其中启用同步为 true，配置为 WebdavConfig
                 WebdavConfig.fromPreferences(preferenceRepository).map { config ->
+                    Log.i(tangshgTAG,"$config")
                     SyncPrefs(true, cloudManager, prefs.syncMode, config)
                 }
 
@@ -89,8 +105,13 @@ class SyncManager(
      *
      * 得到获取的信息，
      */
+
+    //定义一个变量，config ，从 prefs 中获取 config 字段
+    //TODO 这里 map 函数
     val config = prefs.map { prefs -> prefs.config }
         .stateIn(syncingScope, SharingStarted.WhileSubscribed(5000), null)
+
+
 
     /**
      * 消息处理器，用于处理来自UI或其他组件的消息，触发相应的同步操作。
@@ -100,15 +121,20 @@ class SyncManager(
     //actor是Kotlin Coroutines库中的一个函数，用于创建一个并发actor，它处理来自其他协程的消息。
     // 这个actor在自己的协程上下文中运行，接收到消息后会依次处理，提供了一种线程安全的通信方式。
     // 通常用于构建反应式系统或实现并发控制。
-    private val actor = syncingScope.actor<Message> {
 
+    // 定义一个 actor，用于处理来自 UI 或其他组件的消息，触发相应的同步操作。
+    private val actor = syncingScope.actor<Message> {
 
         //遍历消息队列
         for (msg in channel) {
             // 根据消息类型，调用相应的同步方法
-            Log.i(tangshgTAG,"SyncManager 收到的消息是：${msg}")
+            Log.i(tangshgTAG,"收到的消息是：${msg}")
+
             with(msg) {
-                val result = when (this) {
+
+                Log.i(tangshgTAG,"当前使用的 provider：${provider}")
+
+                val result = when (this ) {
 
                     //如果消息是 CreateNote 消息，则调用 provider.createNote 方法，并将结果返回给调用方。
                     is CreateNote -> provider.createNote(note, config)
@@ -153,6 +179,8 @@ class SyncManager(
      * @param block 满足条件时执行的操作。
      * @return BaseResult 操作的结果。
      */
+
+    //一个内联类
     suspend inline fun ifSyncing(
         customConfig: ProviderConfig? = null,
         fallback: () -> Unit = {},
@@ -185,7 +213,19 @@ class SyncManager(
             message.deferred.await()
         }
     }
-
+    /**
+     * 验证同步提供者的身份验证信息。
+     *
+     * @param customConfig 自定义的同步提供者配置。
+     */
+    suspend fun authenticate(customConfig: ProviderConfig? = null) = sendMessage(customConfig)
+    {
+            provider, config ->
+        //TODO 这里注入错了，如何换成 provider?
+        Log.i(tangshgTAG," 已经进入 syncManager.authenticate 6")
+        Log.i(tangshgTAG,"这里得到的provider 是 ：${provider}")
+        Authenticate(provider, config)
+    }
     /**
      * 触发同步操作。
      */
@@ -242,19 +282,7 @@ class SyncManager(
         IsServerCompatible(provider, config)
     }
 
-    /**
-     * 验证同步提供者的身份验证信息。
-     *
-     * @param customConfig 自定义的同步提供者配置。
-     */
-    suspend fun authenticate(customConfig: ProviderConfig? = null) = sendMessage(customConfig)
-    { 
-    provider, config ->
-        //TODO 这里注入错了，如何换成 provider?
-        Log.i(tangshgTAG," 已经进入 syncManager.authenticate 6")
-        Log.i(tangshgTAG,"这里得到的provider 是 ：${provider}")
-        Authenticate(provider, config)
-    }
+
 }
 
 /**
@@ -275,8 +303,17 @@ data class SyncPrefs(
 
 /**
  * 消息类，用于actor内部通信，封装了同步操作的各种请求。
+ *
+ * 定义一个密闭类Message，用于actor内部通信，封装了同步操作的各种请求。
+ *
+ * @property provider 同步提供者。
+ * @property config 同步提供者配置。
+ *
+ * @property deferred 用于异步操作的CompletableDeferred对象。
  */
 private sealed class Message(val provider: SyncProvider, val config: ProviderConfig) {
+    //
+
     val deferred: CompletableDeferred<BaseResult> = CompletableDeferred()
 }
 /**

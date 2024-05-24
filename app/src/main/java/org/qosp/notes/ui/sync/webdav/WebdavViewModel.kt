@@ -80,6 +80,7 @@ class WebdavViewModel @Inject constructor(
             // 执行同步管理器的认证操作
 
             Log.i(tangshgTAG,"即将进入 syncManager.authenticate，这里传入的是配置文件  5")
+9
             Log.i(tangshgTAG,"得到的 syncManager 类型是 $syncManager")
             val loginResult = syncManager.authenticate(config)
 

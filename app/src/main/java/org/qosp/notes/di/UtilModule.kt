@@ -17,8 +17,14 @@ import org.qosp.notes.data.repo.NotebookRepository
 import org.qosp.notes.data.repo.ReminderRepository
 import org.qosp.notes.data.repo.TagRepository
 import org.qosp.notes.data.sync.core.SyncManager
+import org.qosp.notes.data.sync.core.SyncProvider
+import org.qosp.notes.data.sync.nextcloud.NextcloudAPI
 import org.qosp.notes.data.sync.nextcloud.NextcloudManager
+import org.qosp.notes.data.sync.webdav.WebdavAPIImpl
 import org.qosp.notes.data.sync.webdav.WebdavManager
+import org.qosp.notes.preferences.AppPreferences
+import org.qosp.notes.preferences.CloudService
+import org.qosp.notes.preferences.CloudService.*
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.ui.reminders.ReminderManager
 import org.qosp.notes.ui.utils.ConnectionManager
@@ -42,6 +48,7 @@ object UtilModule {
         reminderRepository: ReminderRepository,
     ) = ReminderManager(context, reminderRepository)
 
+
     @Provides
     @Singleton
     fun provideSyncManager(
@@ -57,6 +64,54 @@ object UtilModule {
         nextcloudManager,
         (app as App).syncingScope
     )
+
+
+
+    @Singleton
+    @Provides
+    fun provideSyncProvider(
+        @ApplicationContext context: Context,
+        appPreferences: AppPreferences,
+        noteRepository: NoteRepository,
+        notebookRepository: NotebookRepository,
+        idMappingRepository: IdMappingRepository,
+        app: Application,
+    ): SyncProvider {
+
+        val cloudService = appPreferences.cloudService
+
+        return when (cloudService) {
+            NEXTCLOUD -> NextcloudManager(
+                nextcloudAPI(context), // 假设你需要传递一个NextcloudAPI实例
+                noteRepository,
+                notebookRepository,
+                idMappingRepository
+            )
+            WEBDAV -> WebdavManager(
+                WebdavAPIImpl(), // 假设WebdavAPIImpl没有额外的依赖，可以直接实例化
+                noteRepository,
+                notebookRepository,
+                idMappingRepository
+            )
+            DISABLED -> throw IllegalArgumentException("Sync service is disabled.")
+        }
+    }
+
+//    fun provideCloudManager(
+//        @ApplicationContext context: Context,
+//        preferenceRepository: PreferenceRepository,
+//        app: Application,
+//    ): CloudManager {
+//        val cloudService = preferenceRepository.getCloudService()
+//        return when (cloudService) {
+//            NEXTCLOUD -> NextcloudManager(context, preferenceRepository, (app as App).syncingScope)
+//            WEBDAV -> WebdavManager(context, preferenceRepository, (app as App).syncingScope)
+//            DISABLED -> throw IllegalArgumentException("Sync service is disabled.")
+//        }
+//    }
+
+
+    //TODO 这里是最重要的，怎么做，才能绑定 SyncManager
 
 //    @Provides
 //    @Singleton
