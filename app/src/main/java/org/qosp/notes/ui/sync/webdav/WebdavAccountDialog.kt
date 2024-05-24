@@ -28,9 +28,14 @@ import org.qosp.notes.ui.common.setButton
 import org.qosp.notes.ui.utils.requestFocusAndKeyboard
 import javax.inject.Inject
 
-
+//@AndroidEntryPoint 是 Dagger Hilt 提供的一个注解，用于指示这个 Kotlin 类是 Hilt 依赖注入框架的入口点。
+// 在这个例子中，WebdavAccountDialog 类被标记为 Hilt 的入口点，这意味着 Hilt 将会自动注入在这个类中声明的依赖项。
+// 在本例中，syncManager 变量被注入了 SyncManager 实例，这样就不需要在类的构造函数中手动创建它。
+// Hilt 会基于应用的模块配置，在运行时自动提供所需的依赖。
 @AndroidEntryPoint
 class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
+
+    private val tangshgTAG = "tangshgWebdavAccountDialog"
 
     private val model: WebdavViewModel by activityViewModels()
 
@@ -45,14 +50,17 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         dialog.setTitle(getString(R.string.preferences_webdav_account))
 
+        Log.i(tangshgTAG,"当前的 viewmodel 是 $model")
         // 从 viewModel 中查询当前存储的账号和密码
         lifecycleScope.launch {
             username = model.username.first()
             password = model.password.first()
 
-            Log.i("tangshg", "WebdavAccountDialog 当前账号和密码是  username: $username, password: $password")
+            Log.i(tangshgTAG, "从 model 获取账号密码")
+            Log.i(tangshgTAG, "当前账号和密码是  username: $username, password: $password")
 
             if (username.isNotBlank() && password.isNotBlank()) {
+                Log.i(tangshgTAG, "账号和密码都不为空，显示框中显示账号密码")
                 binding.editTextUsername.setText(username)
                 binding.editTextPassword.setText(password)
             }
@@ -63,6 +71,8 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
             //获取输入框的内容
             username = binding.editTextUsername.text.toString()
             password = binding.editTextPassword.text.toString()
+
+            Log.i(tangshgTAG,"输入框中的内容是：$username,$password")
 
             //判空操作，弹出 Toast 进行提示
             if (username.isBlank() or password.isBlank()) {
@@ -80,11 +90,11 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
             //启动协程，开始连接操作
             lifecycleScope.launch {
 
-
                 //如果连接成功，则提示连接成功，并关闭对话框
-                Log.i("tangshg", "WebdavAccountDialog 身份信息验证  1")
+                Log.i(tangshgTAG, " 账号密码不为空，开始身份认证  1")
+                Log.i(tangshgTAG,"当前的 viewmodel 是 $model")
                 val result = model.authenticate(username, password)
-                Log.i("tangshg","WebdavAccountDialog  身份信息验证的结果{$result} 最后一步")
+                Log.i(tangshgTAG,"身份信息验证的结果{$result} 最后一步")
 
                 //返回的消息用于弹出 toast ，进行提示
                 val messageResId = when (result) {

@@ -28,6 +28,8 @@ class SyncSettingsFragment : BaseFragment(R.layout.fragment_sync_settings) {
     private val binding by viewBinding(FragmentSyncSettingsBinding::bind)
     private val model: SettingsViewModel by activityViewModels()
 
+    private val tangshgTAG = "tangshgSyncSettingsFragment"
+
     override val hasMenu = false
     override val toolbar: Toolbar
         get() = binding.layoutAppBar.toolbar
@@ -158,7 +160,7 @@ class SyncSettingsFragment : BaseFragment(R.layout.fragment_sync_settings) {
     }
     private fun setProviderSettingsVisibility(currentProvider: CloudService) {
         //TODO
-        Log.i("tangshg","SyncStettingFragment 当前的云服务是$currentProvider")
+        Log.i(tangshgTAG,"SyncStettingFragment 当前的云服务是$currentProvider")
         binding.layoutNextcloudSettings.isVisible = currentProvider == CloudService.NEXTCLOUD
         binding.layoutGenericSettings.isVisible = currentProvider != CloudService.DISABLED
         binding.layoutWebdavSettings.isVisible = currentProvider == CloudService.WEBDAV

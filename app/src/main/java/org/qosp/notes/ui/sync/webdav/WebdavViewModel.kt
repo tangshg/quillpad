@@ -26,8 +26,11 @@ class WebdavViewModel @Inject constructor(
     private val syncManager: SyncManager,
 ) : ViewModel() {
 
+    private val tangshgTAG = "tangshgWebdavViewModel"
+
     val username = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_USERNAME)
     val password = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_PASSWORD)
+
 
 
     //TODO 设置 URL，保存到仓库
@@ -45,15 +48,14 @@ class WebdavViewModel @Inject constructor(
         val flow = preferenceRepository.getEncryptedString(
             PreferenceRepository.WEBDAV_INSTANCE_URL
         )
-        Log.i("tangshg", "webdavViewModel 当前保存的网址是" + flow.first())
+        Log.i(tangshgTAG, " 当前保存的网址是" + flow.first())
     }
-
 
     // authenticate 中文：进行身份确认
     //TODO 这里需要改进，要使用 syncManager.authenticate 进行身份确认
     suspend fun authenticate(username: String, password: String): BaseResult {
 
-        Log.i("tangshg","WebdavViewModel 开始身份信息验证 2")
+        Log.i(tangshgTAG," 开始身份信息验证 2")
         // 创建 WebdavConfig 实例，配置认证需要的参数
         val config = WebdavConfig(
             username = username,
@@ -62,15 +64,13 @@ class WebdavViewModel @Inject constructor(
             remoteAddress = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
         )
         //
-        Log.i("tangshg","WebdavViewModel  得到配置文件 3")
+        Log.i(tangshgTAG,"得到配置文件 $config")
 
         //获取 webdav 的网址
         val url = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
         //TODO 当前仓库中的网址为
-        Log.i("tangshg", "现在进行身份验证，当前连接的网址为$url  4")
+        Log.i(tangshgTAG, "当前连接的网址为$url ")
 
-        //开始连接操作
-        //TODO 对异常进行捕捉
         val sardine: Sardine = OkHttpSardine()
         sardine.setCredentials(username, password)
 
@@ -79,9 +79,8 @@ class WebdavViewModel @Inject constructor(
         val response: BaseResult = withContext(Dispatchers.IO) {
             // 执行同步管理器的认证操作
 
-            sardine.list(url)
-
-            Log.i("tangshg","即将进入 syncManager.authenticate，这里传入的是配置文件  5")
+            Log.i(tangshgTAG,"即将进入 syncManager.authenticate，这里传入的是配置文件  5")
+            Log.i(tangshgTAG,"得到的 syncManager 类型是 $syncManager")
             val loginResult = syncManager.authenticate(config)
 
             // 如果认证成功，则检查服务器是否兼容；否则，直接返回认证结果。
@@ -92,7 +91,7 @@ class WebdavViewModel @Inject constructor(
                 loginResult
         }
 
-        Log.i("tangshg", "$resources")
+        Log.i(tangshgTAG, "$resources")
 
         if (resources.isNotEmpty()) {
             // 认证成功

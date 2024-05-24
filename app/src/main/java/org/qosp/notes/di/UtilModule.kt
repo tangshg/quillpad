@@ -18,6 +18,7 @@ import org.qosp.notes.data.repo.ReminderRepository
 import org.qosp.notes.data.repo.TagRepository
 import org.qosp.notes.data.sync.core.SyncManager
 import org.qosp.notes.data.sync.nextcloud.NextcloudManager
+import org.qosp.notes.data.sync.webdav.WebdavManager
 import org.qosp.notes.preferences.PreferenceRepository
 import org.qosp.notes.ui.reminders.ReminderManager
 import org.qosp.notes.ui.utils.ConnectionManager
@@ -56,6 +57,23 @@ object UtilModule {
         nextcloudManager,
         (app as App).syncingScope
     )
+
+//    @Provides
+//    @Singleton
+//    fun provideWebdavSyncManager(
+//        @ApplicationContext context: Context,
+//        preferenceRepository: PreferenceRepository,
+//        idMappingRepository: IdMappingRepository,
+//        webdavManager: WebdavManager,
+//        app: Application,
+//    ) = SyncManager(
+//        preferenceRepository,
+//        idMappingRepository,
+//        ConnectionManager(context),
+//        webdavManager,
+//        (app as App).syncingScope
+//    )
+
 
     @Provides
     @Singleton

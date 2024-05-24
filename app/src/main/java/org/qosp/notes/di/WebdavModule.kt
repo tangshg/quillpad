@@ -27,12 +27,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object WebdavModule {
 
-    private val json = Json { ignoreUnknownKeys = true }
-
-    //dagger 模块的使用，这里提供一个 webdav
-
-
-
     @Provides
     @Singleton
     fun provideWebdavManager(

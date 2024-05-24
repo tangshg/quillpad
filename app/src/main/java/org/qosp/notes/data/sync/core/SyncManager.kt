@@ -40,6 +40,8 @@ class SyncManager(
     private val cloudManager: SyncProvider, //TODO 这里有更改，原先为 cloudManager: NextcloudManager
     val syncingScope: CoroutineScope,
 ) {
+    
+    private val tangshgTAG = "tangshgSyncManager"
 
     /**
      * 根据用户偏好设置获取同步配置的Flow。
@@ -50,7 +52,6 @@ class SyncManager(
     // 用于显式启用实验性的协程库 API。这表明代码中使用了一些可能尚未稳定、未来版本可能会改变的特性。
     // 在给定的代码片段中，添加这个注解表示开发者知道他们正在使用 ExperimentalCoroutinesApi 中的实验性功能，并愿意承担可能的更改风险
     @OptIn(ExperimentalCoroutinesApi::class)
-    
     val prefs: Flow<SyncPrefs> = preferenceRepository.getAll().flatMapLatest {
 
         prefs ->
@@ -105,7 +106,7 @@ class SyncManager(
         //遍历消息队列
         for (msg in channel) {
             // 根据消息类型，调用相应的同步方法
-            Log.i("tangshg","SyncManager 收到的消息是：${msg}")
+            Log.i(tangshgTAG,"SyncManager 收到的消息是：${msg}")
             with(msg) {
                 val result = when (this) {
 
@@ -247,9 +248,11 @@ class SyncManager(
      * @param customConfig 自定义的同步提供者配置。
      */
     suspend fun authenticate(customConfig: ProviderConfig? = null) = sendMessage(customConfig)
-    { provider, config ->
-        Log.i("tangshg","SyncManager 已经进入 syncManager.authenticate 6")
-        Log.i("tangshg","SyncManager  现在即将进入 Authenticate  7")
+    { 
+    provider, config ->
+        //TODO 这里注入错了，如何换成 provider?
+        Log.i(tangshgTAG," 已经进入 syncManager.authenticate 6")
+        Log.i(tangshgTAG,"这里得到的provider 是 ：${provider}")
         Authenticate(provider, config)
     }
 }
@@ -307,7 +310,7 @@ private class Sync(provider: SyncProvider, config: ProviderConfig) : Message(pro
 /**
  * 验证身份验证信息的消息。8
  */
-private class Authenticate(provider: SyncProvider, config: ProviderConfig) : Message(provider, config){}
+private class Authenticate(provider: SyncProvider, config: ProviderConfig) : Message(provider, config)
 /**
  * 检查服务器兼容性的消息。9
  */
