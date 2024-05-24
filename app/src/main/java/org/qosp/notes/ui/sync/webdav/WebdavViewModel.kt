@@ -55,6 +55,8 @@ class WebdavViewModel @Inject constructor(
     //TODO 这里需要改进，要使用 syncManager.authenticate 进行身份确认
     suspend fun authenticate(username: String, password: String): BaseResult {
 
+        Log.i(tangshgTAG,"3 当前的 syncManager 是 $syncManager")
+
         Log.i(tangshgTAG," 开始身份信息验证 2")
         // 创建 WebdavConfig 实例，配置认证需要的参数
         val config = WebdavConfig(
@@ -81,7 +83,7 @@ class WebdavViewModel @Inject constructor(
 
             Log.i(tangshgTAG,"即将进入 syncManager.authenticate，这里传入的是配置文件  5")
 9
-            Log.i(tangshgTAG,"得到的 syncManager 类型是 $syncManager")
+            Log.i(tangshgTAG,"4 当前的 syncManager 是 $syncManager")
             val loginResult = syncManager.authenticate(config)
 
             // 如果认证成功，则检查服务器是否兼容；否则，直接返回认证结果。

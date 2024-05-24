@@ -67,35 +67,35 @@ object UtilModule {
 
 
 
-    @Singleton
-    @Provides
-    fun provideSyncProvider(
-        @ApplicationContext context: Context,
-        appPreferences: AppPreferences,
-        noteRepository: NoteRepository,
-        notebookRepository: NotebookRepository,
-        idMappingRepository: IdMappingRepository,
-        app: Application,
-    ): SyncProvider {
-
-        val cloudService = appPreferences.cloudService
-
-        return when (cloudService) {
-            NEXTCLOUD -> NextcloudManager(
-                nextcloudAPI(context), // 假设你需要传递一个NextcloudAPI实例
-                noteRepository,
-                notebookRepository,
-                idMappingRepository
-            )
-            WEBDAV -> WebdavManager(
-                WebdavAPIImpl(), // 假设WebdavAPIImpl没有额外的依赖，可以直接实例化
-                noteRepository,
-                notebookRepository,
-                idMappingRepository
-            )
-            DISABLED -> throw IllegalArgumentException("Sync service is disabled.")
-        }
-    }
+//    @Singleton
+//    @Provides
+//    fun provideSyncProvider(
+//        @ApplicationContext context: Context,
+//        appPreferences: AppPreferences,
+//        noteRepository: NoteRepository,
+//        notebookRepository: NotebookRepository,
+//        idMappingRepository: IdMappingRepository,
+//        app: Application,
+//    ): SyncProvider {
+//
+//        val cloudService = appPreferences.cloudService
+//
+//        return when (cloudService) {
+//            NEXTCLOUD -> NextcloudManager(
+//                nextcloudAPI(context), // 假设你需要传递一个NextcloudAPI实例
+//                noteRepository,
+//                notebookRepository,
+//                idMappingRepository
+//            )
+//            WEBDAV -> WebdavManager(
+//                WebdavAPIImpl(), // 假设WebdavAPIImpl没有额外的依赖，可以直接实例化
+//                noteRepository,
+//                notebookRepository,
+//                idMappingRepository
+//            )
+//            DISABLED -> throw IllegalArgumentException("Sync service is disabled.")
+//        }
+//    }
 
 //    fun provideCloudManager(
 //        @ApplicationContext context: Context,

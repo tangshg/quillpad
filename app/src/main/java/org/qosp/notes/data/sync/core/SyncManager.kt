@@ -35,7 +35,7 @@ import org.qosp.notes.ui.utils.ConnectionManager
  *
  * TODO 使用 SyncManager 时，一定要注意 传入的那个 cloudManager 对象
  */
-class SyncManager(
+ class SyncManager(
     private val preferenceRepository: PreferenceRepository,
     private val idMappingRepository: IdMappingRepository,
     val connectionManager: ConnectionManager,
@@ -44,6 +44,8 @@ class SyncManager(
 ) {
     
     private val tangshgTAG = "tangshgSyncManager"
+
+    val syncManager = cloudManager
 
     /**
      * 根据用户偏好设置获取同步配置的Flow。
@@ -90,7 +92,7 @@ class SyncManager(
             WEBDAV ->{
                 // 如果用户选择了 WebDAV 服务，则返回一个 Flow<SyncPrefs>，其中启用同步为 true，配置为 WebdavConfig
                 WebdavConfig.fromPreferences(preferenceRepository).map { config ->
-                    Log.i(tangshgTAG,"$config")
+                    Log.i(tangshgTAG,"当前的配置 $config")
                     SyncPrefs(true, cloudManager, prefs.syncMode, config)
                 }
 

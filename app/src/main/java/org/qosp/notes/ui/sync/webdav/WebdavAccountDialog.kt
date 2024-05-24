@@ -50,11 +50,13 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         dialog.setTitle(getString(R.string.preferences_webdav_account))
 
+        Log.i(tangshgTAG,"1 当前的 syncManager 是 ${syncManager.syncManager}")
         Log.i(tangshgTAG,"当前的 viewmodel 是 $model")
         // 从 viewModel 中查询当前存储的账号和密码
         lifecycleScope.launch {
             username = model.username.first()
             password = model.password.first()
+
 
             Log.i(tangshgTAG, "从 model 获取账号密码")
             Log.i(tangshgTAG, "当前账号和密码是  username: $username, password: $password")
@@ -93,6 +95,8 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
                 //如果连接成功，则提示连接成功，并关闭对话框
                 Log.i(tangshgTAG, " 账号密码不为空，开始身份认证  1")
                 Log.i(tangshgTAG,"当前的 viewmodel 是 $model")
+                Log.i(tangshgTAG,"2 当前的 syncManager 是 ${syncManager.syncManager}")
+
                 val result = model.authenticate(username, password)
                 Log.i(tangshgTAG,"身份信息验证的结果{$result} 最后一步")
 
