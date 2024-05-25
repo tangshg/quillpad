@@ -1,6 +1,7 @@
 package org.qosp.notes.data.sync.webdav
 
 import com.thegrizzlylabs.sardineandroid.Sardine
+import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import org.qosp.notes.data.sync.webdav.model.WebdavNote
 
 /**
@@ -15,38 +16,41 @@ import org.qosp.notes.data.sync.webdav.model.WebdavNote
  */
 interface WebdavAPI {
 
+    //获取所有的笔记列表
+    suspend fun getNotesAPI(
+        url: String,
+        sardine: Sardine
+    ): List<WebdavNote>
+
+
     //获取指定的笔记
     suspend fun getNoteAPI(
-        url: String
+        url: String,
+        sardine: Sardine
     ): WebdavNote
+
 
     //创建一个笔记
     suspend fun createNoteAPI(
         note: WebdavNote,
         url: String,
+        sardine: Sardine
     ): WebdavNote
 
     //更新一个笔记
     suspend fun updateNoteAPI(
         note: WebdavNote,
         url: String,
-        etag: String
+        etag: String,
+        sardine: Sardine
     ): WebdavNote
 
     //删除一个笔记
     suspend fun deleteNoteAPI(
         url: String,
+        sardine: Sardine
     )
 
-    //val sardine: Sardine = OkHttpSardine()
-    //sardine.setCredentials(username, password)
-    //val resources = sardine.list(url)
-
-    //获取所有的笔记列表
-    suspend fun getNotesAPI(
-        url: String,
-        sardine: Sardine
-    ): List<WebdavNote>
 
 }//上面是定义的接口
 
@@ -56,6 +60,7 @@ suspend fun WebdavAPI.testCredentials(config: WebdavConfig) {
 
     getNoteAPI(
         url = config.remoteAddress  + "notes",
+        sardine = config.sardine
     )
 }
 
@@ -85,6 +90,7 @@ suspend fun WebdavAPI.getNotes(config: WebdavConfig): List<WebdavNote> {
 suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
     return getNoteAPI(
         url = config.remoteAddress  + "notes/$noteId",
+        sardine = config.sardine
     )
 }
 
@@ -92,6 +98,7 @@ suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
 suspend fun WebdavAPI.deleteNote(note: WebdavNote, config: WebdavConfig) {
     deleteNoteAPI(
         url = config.remoteAddress  + "notes/${note.id}",
+        sardine = config.sardine
     )
 }
 
@@ -101,6 +108,7 @@ suspend fun WebdavAPI.updateNote(note: WebdavNote, etag: String, config: WebdavC
         note = note,
         url = config.remoteAddress  + "notes/${note.id}",
         etag = "\"$etag\"",
+        sardine = config.sardine
     )
 }
 
@@ -110,6 +118,7 @@ suspend fun WebdavAPI.createNote(note: WebdavNote, config: WebdavConfig): Webdav
     return createNoteAPI (
         note = note,
         url = config.remoteAddress  + "notes",
+        sardine = config.sardine
     )
 }
 

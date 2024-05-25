@@ -207,6 +207,13 @@ import org.qosp.notes.ui.utils.ConnectionManager
      * @param block 消息处理逻辑。
      * @return BaseResult 操作的结果。
      */
+    //这个函数是一个kotlin函数，它的功能是在一个同步环境下发送消息。
+    //customConfig是一个可选的ProviderConfig参数，用于提供自定义配置。
+    //block是一个lambda表达式，用于创建一个Message对象，并且这个Message对象会被发送到一个actor。
+    //函数内部会先检查是否正在同步，并且会传入provider和config给block来创建一个Message对象。
+    //然后，这个Message对象会被发送到一个actor。
+    //最后，会等待这个Message对象的deferred完成。
+    //函数返回一个BaseResult对象，表示消息发送的结果。
     private suspend inline fun sendMessage(
         customConfig: ProviderConfig? = null,
         crossinline block: suspend (SyncProvider, ProviderConfig) -> Message,
@@ -319,10 +326,13 @@ data class SyncPrefs(
  * @property deferred 用于异步操作的CompletableDeferred对象。
  */
 private sealed class Message(val provider: SyncProvider, val config: ProviderConfig) {
-    //
-
     val deferred: CompletableDeferred<BaseResult> = CompletableDeferred()
 }
+
+/**
+ * 验证身份验证信息的消息。8
+ */
+private class Authenticate(provider: SyncProvider, config: ProviderConfig) : Message(provider, config)
 /**
  * 创建笔记的消息。1
  */
@@ -351,10 +361,7 @@ private class MoveNoteToBin(val note: Note, provider: SyncProvider, config: Prov
  * 触发同步的消息。7
  */
 private class Sync(provider: SyncProvider, config: ProviderConfig) : Message(provider, config)
-/**
- * 验证身份验证信息的消息。8
- */
-private class Authenticate(provider: SyncProvider, config: ProviderConfig) : Message(provider, config)
+
 /**
  * 检查服务器兼容性的消息。9
  */

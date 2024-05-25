@@ -69,6 +69,10 @@ class WebdavViewModel @Inject constructor(
 
         Log.i(tangshgTAG, "得到配置文件 $config")
 
+        //TODO 这里是测试认证头
+//        val ad = config.sardine.list(config.remoteAddress)
+//        Log.i(tangshgTAG, "查看通过认证后的结果 $fdfa")
+
         //获取 webdav 的网址
         val url = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
 

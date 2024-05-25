@@ -22,10 +22,13 @@ data class WebdavConfig(
 
     //在这里加上 sardine 实例
     val sardine: Sardine = OkHttpSardine()
+    init {
+        sardine.setCredentials(username, password)
+    }
+
 
     //sardine.setCredentials(username, password)
     //val resources = sardine.list(url)
-
 
     //TODO 后期删掉，webdav 不需要认证头
     // 计算基础认证信息头，用于HTTP认证
@@ -36,7 +39,7 @@ data class WebdavConfig(
         get() = mapOf("Authorization" to credentials)
 
     /**
-     * 从偏好设置中构建WebdavConfig的Flow。
+     * 从偏好设置中构建 WebdavConfig 的 Flow。
      * @param preferenceRepository 偏好仓库，用于获取加密的配置信息。
      * @return Flow<WebdavConfig?>，可能为null的情况是当所需的配置信息不完整时。
      */

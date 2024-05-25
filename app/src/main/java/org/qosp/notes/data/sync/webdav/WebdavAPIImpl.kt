@@ -10,7 +10,7 @@ import java.io.IOException
 class WebdavAPIImpl(private val sardine: Sardine) : WebdavAPI {
 
     // 实现 WebdavAPI 的所有方法
-    override suspend fun getNoteAPI(url: String): WebdavNote {
+    override suspend fun getNoteAPI(url: String, sardine: Sardine): WebdavNote {
         // 使用 Sardine 获取 WebdavNote 并解析
 
         sardine.get(url)
@@ -20,18 +20,18 @@ class WebdavAPIImpl(private val sardine: Sardine) : WebdavAPI {
         return  TODO()
     }
 
-    override suspend fun createNoteAPI(note: WebdavNote, url: String): WebdavNote {
+    override suspend fun createNoteAPI(note: WebdavNote, url: String, sardine: Sardine): WebdavNote {
         // 使用 Sardine 创建 WebdavNote
         return TODO("提供返回值")
 
     }
 
-    override suspend fun updateNoteAPI(note: WebdavNote, url: String, etag: String): WebdavNote {
+    override suspend fun updateNoteAPI(note: WebdavNote, url: String, etag: String, sardine: Sardine): WebdavNote {
         // 使用 Sardine 更新 WebdavNote
         return TODO("提供返回值")
     }
 
-    override suspend fun deleteNoteAPI(url: String) {
+    override suspend fun deleteNoteAPI(url: String, sardine: Sardine) {
         // 使用 Sardine 删除 WebdavNote
         try {
             sardine.delete(url)//没有返回值
