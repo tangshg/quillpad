@@ -2,6 +2,7 @@ package org.qosp.notes.di
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +34,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object UtilModule {
+
+    private  val tangshgTAG = "tangshgUtilModule"
 
     @Provides
     @Singleton
@@ -67,13 +70,15 @@ object UtilModule {
         return runBlocking{
             val cloudService = preferenceRepository.getCloudService().first()
 
+            Log.i(tangshgTAG,"获取的云服务提供商 $cloudService")
+
             val syncProvider: SyncProvider = when (cloudService) {
                 NEXTCLOUD -> nextcloudManager
                 WEBDAV -> webdavManager
-
                 DISABLED -> throw IllegalStateException("No cloud service selected")
             }
 
+            Log.i(tangshgTAG,"提供的云服务商是 $syncProvider")
             syncProvider
         }
 

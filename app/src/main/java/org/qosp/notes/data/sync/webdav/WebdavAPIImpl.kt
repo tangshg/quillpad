@@ -13,8 +13,6 @@ class WebdavAPIImpl(private val sardine: Sardine) : WebdavAPI {
     override suspend fun getNoteAPI(url: String, sardine: Sardine): WebdavNote {
         // 使用 Sardine 获取 WebdavNote 并解析
 
-        sardine.get(url)
-
         val resources = sardine.list(url)
 
         return  TODO()
