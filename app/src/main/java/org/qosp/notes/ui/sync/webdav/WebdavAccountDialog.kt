@@ -57,7 +57,6 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
             username = model.username.first()
             password = model.password.first()
 
-
             Log.i(tangshgTAG, "从 model 获取账号密码")
             Log.i(tangshgTAG, "当前账号和密码是  username: $username, password: $password")
 
@@ -102,15 +101,11 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
 
                 //返回的消息用于弹出 toast ，进行提示
                 val messageResId = when (result) {
+                    NoConnectivity -> R.string.message_internet_not_available
+                    ServerNotSupported -> R.string.message_server_not_compatible
                     Success -> R.string.message_logged_in_successfully
-                    is ApiError -> TODO()
-                    is GenericError -> TODO()
-                    InvalidConfig -> TODO()
-                    NoConnectivity -> TODO()
-                    OperationNotSupported -> TODO()
-                    ServerNotSupported -> TODO()
-                    SyncingNotEnabled -> TODO()
-                    Unauthorized -> TODO()
+                    Unauthorized -> R.string.message_invalid_credentials
+                    else -> R.string.message_something_went_wrong
                 }
                 if (messageResId != R.string.message_something_went_wrong) { // known error or success
                     Toast.makeText(requireContext(), getString(messageResId), Toast.LENGTH_SHORT).show()

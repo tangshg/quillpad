@@ -70,8 +70,8 @@ class WebdavViewModel @Inject constructor(
         Log.i(tangshgTAG, "得到配置文件 $config")
 
         //TODO 这里是测试认证头
-//        val ad = config.sardine.list(config.remoteAddress)
-//        Log.i(tangshgTAG, "查看通过认证后的结果 $fdfa")
+        val tangshgTest = config.sardine.list(config.remoteAddress)
+        Log.i(tangshgTAG, "查看通过认证后的结果 $tangshgTest")
 
         //获取 webdav 的网址
         val url = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
@@ -86,7 +86,8 @@ class WebdavViewModel @Inject constructor(
         val response: BaseResult = withContext(Dispatchers.IO) {
             // 执行同步管理器的认证操作
 
-            Log.i(tangshgTAG, "即将进入 syncManager.authenticate，这里传入的是配置文件  5")
+            Log.i(tangshgTAG, "即将进入 syncManager.authenticate，这里传入的是配置文件  5" +
+                "$config")
             Log.i(tangshgTAG, "4 当前的 syncManager 是 $syncManager")
 
             val loginResult = syncManager.authenticate(config)

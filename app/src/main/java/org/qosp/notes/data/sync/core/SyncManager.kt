@@ -170,6 +170,8 @@ import org.qosp.notes.ui.utils.ConnectionManager
                     }
                 }
 
+                Log.i(tangshgTAG,"收到执行验证的结果 $result")
+
                 deferred.complete(result)
             }
         }

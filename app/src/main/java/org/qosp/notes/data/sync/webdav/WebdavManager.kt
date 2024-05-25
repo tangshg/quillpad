@@ -43,8 +43,9 @@ class WebdavManager(
     private val tangshgTAG = "WebdavManager"
     //这里是 SyncProvider 接口的实现
     override suspend fun authenticate(config: ProviderConfig): BaseResult {
+        //TODO 为什么走不到这个方法？
         //如果接收的不是 webdavConfig 类型，返回无效配置
-        Log.i(tangshgTAG, "当前接受的配置 $config")
+        Log.e(tangshgTAG, "当前接受的配置 $config")
         if (config !is WebdavConfig) return InvalidConfig
         Log.i(tangshgTAG, "当前接受的配置 $config")
 
