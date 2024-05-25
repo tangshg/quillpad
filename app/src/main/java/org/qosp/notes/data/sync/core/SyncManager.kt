@@ -17,6 +17,7 @@ import org.qosp.notes.data.model.Note
 import org.qosp.notes.data.repo.IdMappingRepository
 import org.qosp.notes.data.sync.nextcloud.NextcloudConfig
 import org.qosp.notes.data.sync.webdav.WebdavConfig
+import org.qosp.notes.preferences.CloudService
 import org.qosp.notes.preferences.CloudService.DISABLED
 import org.qosp.notes.preferences.CloudService.NEXTCLOUD
 import org.qosp.notes.preferences.CloudService.WEBDAV
@@ -83,14 +84,13 @@ import org.qosp.notes.ui.utils.ConnectionManager
                 //NextcloudConfig.fromPreferences 是一个静态方法，返回值是 Flow<NextcloudConfig?>
                 //使用 map 操作符将 NextcloudConfig 转换为 SyncPrefs
                 NextcloudConfig.fromPreferences(preferenceRepository).map { config ->
-                    Log.i("","")
                     SyncPrefs(true, cloudManager, prefs.syncMode, config)
-
                 }
             }
 
             WEBDAV ->{
                 // 如果用户选择了 WebDAV 服务，则返回一个 Flow<SyncPrefs>，其中启用同步为 true，配置为 WebdavConfig
+                //云服务提供商为 WEBDAV
                 WebdavConfig.fromPreferences(preferenceRepository).map { config ->
                     Log.i(tangshgTAG,"当前的配置 $config")
                     SyncPrefs(true, cloudManager, prefs.syncMode, config)
@@ -114,7 +114,6 @@ import org.qosp.notes.ui.utils.ConnectionManager
         .stateIn(syncingScope, SharingStarted.WhileSubscribed(5000), null)
 
 
-
     /**
      * 消息处理器，用于处理来自UI或其他组件的消息，触发相应的同步操作。
      */
@@ -127,6 +126,7 @@ import org.qosp.notes.ui.utils.ConnectionManager
     // 定义一个 actor，用于处理来自 UI 或其他组件的消息，触发相应的同步操作。
     private val actor = syncingScope.actor<Message> {
 
+
         //遍历消息队列
         for (msg in channel) {
             // 根据消息类型，调用相应的同步方法
@@ -135,8 +135,10 @@ import org.qosp.notes.ui.utils.ConnectionManager
             with(msg) {
 
                 Log.i(tangshgTAG,"当前使用的 provider：${provider}")
+                Log.i(tangshgTAG,"当前使用的 config：${config}")
 
                 val result = when (this ) {
+
 
                     //如果消息是 CreateNote 消息，则调用 provider.createNote 方法，并将结果返回给调用方。
                     is CreateNote -> provider.createNote(note, config)

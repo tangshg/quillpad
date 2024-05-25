@@ -7,6 +7,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import org.qosp.notes.App
 import org.qosp.notes.BuildConfig
 import org.qosp.notes.components.MediaStorageManager
@@ -18,11 +21,8 @@ import org.qosp.notes.data.repo.ReminderRepository
 import org.qosp.notes.data.repo.TagRepository
 import org.qosp.notes.data.sync.core.SyncManager
 import org.qosp.notes.data.sync.core.SyncProvider
-import org.qosp.notes.data.sync.nextcloud.NextcloudAPI
 import org.qosp.notes.data.sync.nextcloud.NextcloudManager
-import org.qosp.notes.data.sync.webdav.WebdavAPIImpl
 import org.qosp.notes.data.sync.webdav.WebdavManager
-import org.qosp.notes.preferences.AppPreferences
 import org.qosp.notes.preferences.CloudService
 import org.qosp.notes.preferences.CloudService.*
 import org.qosp.notes.preferences.PreferenceRepository
@@ -49,53 +49,51 @@ object UtilModule {
     ) = ReminderManager(context, reminderRepository)
 
 
+    //这里函数的最主要是为了向 provider 注入 SyncManager
+    //提供 NextcloudManager 或者 WebdavManager
+
+    //不可以通过挂起函数来获取，因为函数是挂起函数，不能在主线程中调用
+
+    //为什么 NextcloudManager不报错，webdavManager 报错
+    @Singleton
+    @Provides
+     fun provideSyncProvider(
+        nextcloudManager: NextcloudManager,
+        webdavManager: WebdavManager,
+
+       preferenceRepository: PreferenceRepository,
+         ): SyncProvider
+    {
+        return runBlocking{
+            val cloudService = preferenceRepository.getCloudService().first()
+
+            val syncProvider: SyncProvider = when (cloudService) {
+                NEXTCLOUD -> nextcloudManager
+                WEBDAV -> webdavManager
+
+                DISABLED -> throw IllegalStateException("No cloud service selected")
+            }
+
+            syncProvider
+        }
+
+    }
+
     @Provides
     @Singleton
     fun provideSyncManager(
         @ApplicationContext context: Context,
         preferenceRepository: PreferenceRepository,
         idMappingRepository: IdMappingRepository,
-        nextcloudManager: NextcloudManager,
+        syncProvider: SyncProvider,
         app: Application,
     ) = SyncManager(
         preferenceRepository,
         idMappingRepository,
         ConnectionManager(context),
-        nextcloudManager,
+        syncProvider,
         (app as App).syncingScope
     )
-
-
-
-//    @Singleton
-//    @Provides
-//    fun provideSyncProvider(
-//        @ApplicationContext context: Context,
-//        appPreferences: AppPreferences,
-//        noteRepository: NoteRepository,
-//        notebookRepository: NotebookRepository,
-//        idMappingRepository: IdMappingRepository,
-//        app: Application,
-//    ): SyncProvider {
-//
-//        val cloudService = appPreferences.cloudService
-//
-//        return when (cloudService) {
-//            NEXTCLOUD -> NextcloudManager(
-//                nextcloudAPI(context), // 假设你需要传递一个NextcloudAPI实例
-//                noteRepository,
-//                notebookRepository,
-//                idMappingRepository
-//            )
-//            WEBDAV -> WebdavManager(
-//                WebdavAPIImpl(), // 假设WebdavAPIImpl没有额外的依赖，可以直接实例化
-//                noteRepository,
-//                notebookRepository,
-//                idMappingRepository
-//            )
-//            DISABLED -> throw IllegalArgumentException("Sync service is disabled.")
-//        }
-//    }
 
 //    fun provideCloudManager(
 //        @ApplicationContext context: Context,

@@ -33,7 +33,7 @@ import retrofit2.HttpException
 
 //在哪里调用它？
 class WebdavManager(
-    private val webdavAPI:WebdavAPIImpl, // Webdav API客户端，用于与服务器交互
+    private val webdavAPI:WebdavAPI, // Webdav API客户端，用于与服务器交互
     private val noteRepository: NoteRepository, // 笔记数据仓库
     private val notebookRepository: NotebookRepository, // 笔记本数据仓库
     private val idMappingRepository: IdMappingRepository, // ID映射数据仓库，记录本地与远程笔记ID对应关系

@@ -17,7 +17,7 @@ import java.io.IOException
  * 偏好设置仓库类，用于管理应用的偏好设置数据。
  *
  * @param dataStore DataStore对象，用于持久化存储偏好设置。
- * @param sharedPreferences FlowSharedPreferences对象，用于管理Flow类型的SharedPreferences。
+ * @param sharedPreferences FlowSharedPreferences对象，用于管理 Flow 类型的SharedPreferences。
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PreferenceRepository(
@@ -144,6 +144,20 @@ class PreferenceRepository(
         dataStore.setEnum(preference)
     }
 
+
+    fun getCloudService(): Flow<CloudService> {
+        return dataStore.data
+            .catch {
+                if (it is IOException) {
+                    emit(emptyPreferences()) // 发出空偏好设置，处理数据存储异常。
+                } else {
+                    throw it // 重新抛出非IOException类型的异常。
+                }
+            }
+            .map { prefs ->
+                prefs.getEnum<CloudService>() // 使用泛型参数指定枚举类型
+            }
+    }
     /**
      * 仓库类的伴生对象，定义了一些常量，用于云服务和WebDAV服务的配置。
      */
