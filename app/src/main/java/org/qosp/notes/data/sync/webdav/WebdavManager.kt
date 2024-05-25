@@ -1,5 +1,6 @@
 package org.qosp.notes.data.sync.webdav
 
+import android.util.Log
 import kotlinx.coroutines.flow.first
 import org.qosp.notes.data.model.IdMapping
 import org.qosp.notes.data.model.Note
@@ -39,13 +40,17 @@ class WebdavManager(
     private val idMappingRepository: IdMappingRepository, // ID映射数据仓库，记录本地与远程笔记ID对应关系
 ) : SyncProvider {
 
-    //这里是 provider 接口的实现
+    private val tangshgTAG = "WebdavManager"
+    //这里是 SyncProvider 接口的实现
     override suspend fun authenticate(config: ProviderConfig): BaseResult {
         //如果接收的不是 webdavConfig 类型，返回无效配置
+        Log.i(tangshgTAG, "当前接受的配置 $config")
         if (config !is WebdavConfig) return InvalidConfig
+        Log.i(tangshgTAG, "当前接受的配置 $config")
 
         //如果是 webdavConfig 类型，就调用 webdavAPI 的 testCredentials 方法进行身份验证
         return tryCalling {
+            Log.i(tangshgTAG, "已经进入 authenticate 方法")
             webdavAPI.testCredentials(config)
         }
     }
@@ -387,6 +392,8 @@ class WebdavManager(
     }
 
     // 尝试执行并处理异常的通用函数
+
+    //
     private inline fun tryCalling(block: () -> Unit): BaseResult {
         return try {
             block()

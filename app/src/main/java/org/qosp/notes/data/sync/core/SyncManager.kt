@@ -217,6 +217,9 @@ import org.qosp.notes.ui.utils.ConnectionManager
             message.deferred.await()
         }
     }
+
+
+
     /**
      * 验证同步提供者的身份验证信息。
      *
@@ -225,7 +228,7 @@ import org.qosp.notes.ui.utils.ConnectionManager
     suspend fun authenticate(customConfig: ProviderConfig? = null) = sendMessage(customConfig)
     {
             provider, config ->
-        //TODO 这里注入错了，如何换成 provider?
+        //TODO 这里注入错了，如何换成 provider?已经成功注入了 240525
         Log.i(tangshgTAG," 已经进入 syncManager.authenticate 6")
         Log.i(tangshgTAG,"这里得到的provider 是 ：${provider}")
         Authenticate(provider, config)
