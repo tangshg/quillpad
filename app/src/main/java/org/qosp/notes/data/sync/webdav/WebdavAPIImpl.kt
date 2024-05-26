@@ -16,23 +16,17 @@ class WebdavAPIImpl(private val sardine: Sardine) : WebdavAPI {
 
     // 实现 WebdavAPI 的所有方法
     override suspend fun getNoteAPI(url: String, sardine: Sardine): WebdavNote {
+        val webdavNote =WebdavNote(
+            1,
+            "etg",
+            "content",
+            "title",
+            "category",
+            false,
+            11,
+            false,)
 
-        val davResource = sardine.list(url).firstOrNull() ?: throw Exception("No resource found at $url")
-
-
-        Log.i(tangshgTAG, "getNoteAPI: $davResource")
-
-        // 获取标题和内容
-        val title = davResource.displayName ?: throw Exception("No display name for the resource")
-        val content = "Not available from DavResource, fetch it separately" // 假设需要通过其他方式获取内容
-        val id = extractIdFromUrl(url)
-        val etag = davResource.etag // 假设 DavResource 有一个 etag 属性
-        val category = "defaultCategory" // 需要一个实际的逻辑来确定或获取分类
-        val favorite = false // 默认值，可能需要从元数据中获取或设置
-        val modified = davResource.modified?.time ?: 0L // 如果 lastModified 为 null，默认值为 0
-        val readOnly = false // 由于 DavResource 类中没有 isReadOnly 方法，这里假设默认值
-
-        return WebdavNote(id, etag, content, title, category, favorite, modified, readOnly)
+        return webdavNote
     }
 
     private fun extractIdFromUrl(url: String): Long {
@@ -65,6 +59,18 @@ class WebdavAPIImpl(private val sardine: Sardine) : WebdavAPI {
     override suspend fun getNotesAPI(url: String, sardine: Sardine): List<WebdavNote> {
         // 使用 Sardine 获取所有 WebdavNote 并解析
 
-        return TODO()
+        val webdavNote =WebdavNote(
+            1,
+            "etg",
+            "content",
+            "title",
+            "category",
+            false,
+            11,
+            false,)
+
+        val list = listOf(webdavNote)
+
+        return list
     }
 }

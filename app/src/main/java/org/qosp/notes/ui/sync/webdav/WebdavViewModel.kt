@@ -82,7 +82,6 @@ class WebdavViewModel @Inject constructor(
         // 并返回block的执行结果。这里指定的上下文是Dispatchers.IO，表示在IO线程池中执行block。
         // withContext函数会阻塞当前线程，直到block执行完成并返回结果。
         // 这段代码的目的是在IO线程池中执行某个操作，并将操作结果赋值给response变量。
-
         val response: BaseResult = withContext(Dispatchers.IO) {
             // 执行同步管理器的认证操作
 

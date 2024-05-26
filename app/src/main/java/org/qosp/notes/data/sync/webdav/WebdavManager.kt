@@ -40,16 +40,21 @@ class WebdavManager(
     private val idMappingRepository: IdMappingRepository, // ID映射数据仓库，记录本地与远程笔记ID对应关系
 ) : SyncProvider {
 
-    private val tangshgTAG = "WebdavManager"
+    private val tangshgTAG = "tangshgWebdavManager"
     //这里是 SyncProvider 接口的实现
     override suspend fun authenticate(config: ProviderConfig): BaseResult {
-        //TODO 为什么走不到这个方法？
+
         //如果接收的不是 webdavConfig 类型，返回无效配置
-        Log.e(tangshgTAG, "当前接受的配置 $config")
+        Log.i(tangshgTAG, "当前接受的配置 $config")
         if (config !is WebdavConfig) return InvalidConfig
         Log.i(tangshgTAG, "当前接受的配置 $config")
 
+        //TODO 这个如 return 只用来测试，后期删除
+        //return Success
+
         //如果是 webdavConfig 类型，就调用 webdavAPI 的 testCredentials 方法进行身份验证
+
+        //tryCalling 接受一个函数作为参数，如果函数执行成功，则返回 Success，否则返回 GenericError
         return tryCalling {
             Log.i(tangshgTAG, "已经进入 authenticate 方法")
             webdavAPI.testCredentials(config)
@@ -393,8 +398,17 @@ class WebdavManager(
     }
 
     // 尝试执行并处理异常的通用函数
-
-    //
+    //inline: 这个修饰符告诉编译器在调用点处展开函数，以减少运行时开销。
+    //fun tryCalling: 定义了一个名为 tryCalling 的函数，它接受一个无参的 lambda 表达式 block，该表达式应该返回 Unit 类型（表示无返回值）。
+    //返回值类型：BaseResult，这是同步操作的结果，可以是成功、错误或其他同步状态。
+    //函数逻辑：
+    //正常情况：如果 lambda 表达式 block 执行时没有抛出异常，那么函数返回 Success，表示操作成功。
+    //异常情况：如果在执行 block 时发生了异常，try-catch 结构会捕获异常：
+    //如果是 ServerNotSupportedException 异常，返回 ServerNotSupported。
+    //如果是 HttpException，根据 HTTP 错误代码判断错误类型：
+    //401 返回 Unauthorized。
+    //其他代码返回带有错误信息和代码的 ApiError。
+    //如果是其他类型的异常，返回带有异常消息的 GenericError。
     private inline fun tryCalling(block: () -> Unit): BaseResult {
         return try {
             block()

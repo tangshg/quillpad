@@ -1,7 +1,10 @@
 package org.qosp.notes.data.sync.webdav
 
+import com.google.android.exoplayer2.util.Log
 import com.thegrizzlylabs.sardineandroid.Sardine
 import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.qosp.notes.data.sync.webdav.model.WebdavNote
 
 /**
@@ -17,11 +20,11 @@ import org.qosp.notes.data.sync.webdav.model.WebdavNote
 interface WebdavAPI {
 
     //获取所有的笔记列表
+    //笔记列表不需要做任何转换，只需要读到列表就好
     suspend fun getNotesAPI(
         url: String,
         sardine: Sardine
     ): List<WebdavNote>
-
 
     //获取指定的笔记
     suspend fun getNoteAPI(
@@ -58,10 +61,6 @@ interface WebdavAPI {
 //定义的一个函数，函数名为 testCredentials，接收一个参数 config，返回值为 Unit。
 suspend fun WebdavAPI.testCredentials(config: WebdavConfig) {
 
-    getNoteAPI(
-        url = config.remoteAddress  + "notes",
-        sardine = config.sardine
-    )
 }
 
 
@@ -87,7 +86,7 @@ suspend fun WebdavAPI.getNotes(config: WebdavConfig): List<WebdavNote> {
 }
 
 //获取笔记
-suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote {
+suspend fun WebdavAPI.getNote(config: WebdavConfig, noteId: Long): WebdavNote{
     return getNoteAPI(
         url = config.remoteAddress  + "notes/$noteId",
         sardine = config.sardine

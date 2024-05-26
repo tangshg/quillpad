@@ -136,6 +136,7 @@ import org.qosp.notes.ui.utils.ConnectionManager
 
                 Log.i(tangshgTAG,"当前使用的 provider：${provider}")
                 Log.i(tangshgTAG,"当前使用的 config：${config}")
+                Log.i(tangshgTAG,"当前使用的 provider：${provider}")
 
                 val result = when (this ) {
 
@@ -220,14 +221,15 @@ import org.qosp.notes.ui.utils.ConnectionManager
         customConfig: ProviderConfig? = null,
         crossinline block: suspend (SyncProvider, ProviderConfig) -> Message,
     ): BaseResult {
+
+        Log.i(tangshgTAG,"进入 syncManager.sendMessage 1")
+
         return ifSyncing(customConfig) { provider, config ->
             val message = block(provider, config)
             actor.send(message)
             message.deferred.await()
         }
     }
-
-
 
     /**
      * 验证同步提供者的身份验证信息。
@@ -240,6 +242,7 @@ import org.qosp.notes.ui.utils.ConnectionManager
         //TODO 这里注入错了，如何换成 provider?已经成功注入了 240525
         Log.i(tangshgTAG," 已经进入 syncManager.authenticate 6")
         Log.i(tangshgTAG,"这里得到的provider 是 ：${provider}")
+        Log.i(tangshgTAG,"这里得到的config 是 ：${config}")
         Authenticate(provider, config)
     }
     /**

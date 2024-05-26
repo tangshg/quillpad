@@ -20,9 +20,12 @@ data class WebdavConfig(
     val password: String, // 密码
 ) : ProviderConfig {
 
+
     //在这里加上 sardine 实例
     val sardine: Sardine = OkHttpSardine()
+
     init {
+        //TODO 不可以将 sardine 实例放在这里，如果账号密码不对，会直接抛出异常
         sardine.setCredentials(username, password)
     }
 

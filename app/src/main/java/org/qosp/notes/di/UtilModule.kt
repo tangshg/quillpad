@@ -72,10 +72,11 @@ object UtilModule {
 
             Log.i(tangshgTAG,"获取的云服务提供商 $cloudService")
 
+
             val syncProvider: SyncProvider = when (cloudService) {
                 NEXTCLOUD -> nextcloudManager
                 WEBDAV -> webdavManager
-                DISABLED -> throw IllegalStateException("No cloud service selected")
+                DISABLED -> webdavManager //TODO 待优化
             }
 
             Log.i(tangshgTAG,"提供的云服务商是 $syncProvider")
