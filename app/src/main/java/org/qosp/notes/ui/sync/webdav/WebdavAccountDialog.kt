@@ -8,19 +8,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.thegrizzlylabs.sardineandroid.impl.OkHttpSardine
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.qosp.notes.R
-import org.qosp.notes.data.sync.core.ApiError
-import org.qosp.notes.data.sync.core.GenericError
-import org.qosp.notes.data.sync.core.InvalidConfig
 import org.qosp.notes.data.sync.core.NoConnectivity
-import org.qosp.notes.data.sync.core.OperationNotSupported
 import org.qosp.notes.data.sync.core.ServerNotSupported
 import org.qosp.notes.data.sync.core.Success
 import org.qosp.notes.data.sync.core.SyncManager
-import org.qosp.notes.data.sync.core.SyncingNotEnabled
 import org.qosp.notes.data.sync.core.Unauthorized
 import org.qosp.notes.databinding.DialogWebdavAccountBinding
 import org.qosp.notes.ui.common.BaseDialog
@@ -65,6 +61,7 @@ class WebdavAccountDialog : BaseDialog<DialogWebdavAccountBinding>() {
                 binding.editTextUsername.setText(username)
                 binding.editTextPassword.setText(password)
             }
+
         }
 
         //当按下保存的时候，对输入框进行校验

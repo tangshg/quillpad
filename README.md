@@ -10,6 +10,11 @@
 1. 在 WebdavAccountDialog 中弹出对话框并进行简单的判空操作
 2. 如果输入框不为空，将输入的账号密码传入 WebdavViewModel 中，进行身份认证
 3. WebdavViewModel 中，通过 authenticate 方法进行身份认证
+awdw3cwkrmmrey3y
+
+fangshancun@gmail.com
+
+https://dav.jianguoyun.com/dav/
 
 
 //认证信息的流程
