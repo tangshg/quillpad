@@ -26,13 +26,25 @@ import retrofit2.HttpException
 /**
  * WebdavManager 类负责与 webdav 服务器进行同步操作，包括创建、删除、更新笔记。
  *
+ * 实现 SyncProvider 接口 的八个 API
+ *
  * @param webdavAPI 用于与 webdav 服务器通信的API客户端。
  * @param noteRepository 本地笔记数据的存储库。
  * @param notebookRepository 本地笔记本数据的存储库。
  * @param idMappingRepository 本地和远程笔记ID映射的存储库。
+ *
+ * 1. createNote 在服务器上创建新的笔记
+ * 2. deleteNote 在服务器上删除指定的笔记
+ * 3. moveNoteToBin 在服务器上将指定的笔记移动到回收站
+ * 4. restoreNote 在服务器上恢复指定的笔记
+ * 5. updateNote 在服务器上更新指定的笔记
+ * 6. authenticate 身份验证
+ * 7. isServerCompatible 服务器是否兼容
+ * 8. sync 同步
+ *
  */
 
-//在哪里调用它？
+//在哪里调用它？在 SyncManager 中调用
 class WebdavManager(
     private val webdavAPI:WebdavAPI, // Webdav API客户端，用于与服务器交互
     private val noteRepository: NoteRepository, // 笔记数据仓库
@@ -41,27 +53,7 @@ class WebdavManager(
 ) : SyncProvider {
 
     private val tangshgTAG = "tangshgWebdavManager"
-    //这里是 SyncProvider 接口的实现
-    override suspend fun authenticate(config: ProviderConfig): BaseResult {
 
-        //如果接收的不是 webdavConfig 类型，返回无效配置
-        Log.i(tangshgTAG, "当前接受的配置 $config")
-        if (config !is WebdavConfig) return InvalidConfig
-        Log.i(tangshgTAG, "当前接受的配置 $config")
-
-        //TODO 这个如 return 只用来测试，后期删除
-        //return Success
-
-        //如果是 webdavConfig 类型，就调用 webdavAPI 的 testCredentials 方法进行身份验证
-
-        //tryCalling 接受一个函数作为参数，如果函数执行成功，则返回 Success，否则返回 GenericError
-        return tryCalling {
-            Log.i(tangshgTAG, "已经进入 authenticate 方法")
-            webdavAPI.testCredentials(config)
-        }
-    }
-
-    //继承了这个接口，就要实现这个接口的所有方法
     /**
      * 在 webdav 服务器上创建新的笔记。
      * @param note 要创建的笔记。
@@ -189,8 +181,25 @@ class WebdavManager(
      * @param config 配置信息，必须是 WebdavConfig类型。
      * @return 验证结果。
      */
+    override suspend fun authenticate(config: ProviderConfig): BaseResult {
 
+        //如果接收的不是 webdavConfig 类型，返回无效配置
+        Log.i(tangshgTAG, "当前接受的配置 $config")
+        if (config !is WebdavConfig) return InvalidConfig
+        Log.i(tangshgTAG, "当前接受的配置 $config")
 
+        //TODO 这个如 return 只用来测试，后期删除
+        //return Success
+
+        //如果是 webdavConfig 类型，就调用 webdavAPI 的 testCredentials 方法进行身份验证
+
+        //tryCalling 接受一个函数作为参数，如果函数执行成功，则返回 Success，否则返回 GenericError
+        return tryCalling {
+            Log.i(tangshgTAG, "已经进入 authenticate 方法")
+            Log.i(tangshgTAG, "即将进入$webdavAPI")
+            webdavAPI.testCredentials(config)
+        }
+    }
 
     /**
      * 检查服务器是否兼容Webdav服务。
@@ -199,8 +208,9 @@ class WebdavManager(
      * @return 兼容性检查结果。
      */
     override suspend fun isServerCompatible(config: ProviderConfig): BaseResult {
-        return InvalidConfig
 
+        // webdav 无法检查认证结果，直接返回成功
+        return Success
 
 //        if (config !is NextcloudConfig) return InvalidConfig
 //
@@ -213,7 +223,7 @@ class WebdavManager(
     }
 
     /**
-     * 与Webdav服务器进行同步。
+     * 与 Webdav服务器进行同步。
      *
      * @param config 配置信息，必须是WebdavConfig类型。
      * @return 同步结果。
@@ -427,7 +437,4 @@ class WebdavManager(
         }
     }
 
-    companion object {
-        const val MIN_SUPPORTED_VERSION = 1
-    }
 }

@@ -9,18 +9,17 @@ import org.qosp.notes.data.sync.webdav.model.WebdavNote
 
 /**
  * 定义与 webdav 笔记应用API交互的接口。
- * 如果有继承这个接口，需要实现这个接口的全部方法+
- * 一共是五个接口，分别是
- * getNotesAPI
- * getNoteAPI
- * createNoteAPI
- * updateNoteAPI
- * deleteNoteAPI
+ * 共有5个 API
+ *
+ * 1. getNotesAPI
+ * 2. getNoteAPI
+ * 3. createNoteAPI
+ * 4. updateNoteAPI
+ * 5. deleteNoteAPI
  */
 interface WebdavAPI {
 
     //获取所有的笔记列表
-    //笔记列表不需要做任何转换，只需要读到列表就好
     suspend fun getNotesAPI(
         url: String,
         sardine: Sardine
@@ -61,6 +60,7 @@ interface WebdavAPI {
 //定义的一个函数，函数名为 testCredentials，接收一个参数 config，返回值为 Unit。
 suspend fun WebdavAPI.testCredentials(config: WebdavConfig) {
 
+    Log.i("testCredentials", "testCredentials")
 }
 
 

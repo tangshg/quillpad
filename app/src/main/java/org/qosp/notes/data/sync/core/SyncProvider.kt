@@ -4,6 +4,18 @@ import org.qosp.notes.data.model.Note
 
 /**
  * SyncProvider 接口定义了与同步提供者交互所需的方法。
+ *
+ * 共有八个方法
+ *
+ * 1. sync: 同步数据。
+ * 2. createNote: 创建一个新的笔记。
+ * 3. deleteNote: 删除一个笔记。
+ * 4. updateNote: 更新现有的笔记。
+ * 5. moveNoteToBin:
+ * 6. restoreNote
+ * 7. authenticate
+ * 8. isServerCompatible
+ *
  */
 interface SyncProvider {
 

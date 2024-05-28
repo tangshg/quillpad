@@ -134,7 +134,6 @@ import org.qosp.notes.ui.utils.ConnectionManager
 
             with(msg) {
 
-                Log.i(tangshgTAG,"当前使用的 provider：${provider}")
                 Log.i(tangshgTAG,"当前使用的 config：${config}")
                 Log.i(tangshgTAG,"当前使用的 provider：${provider}")
 
