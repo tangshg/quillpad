@@ -40,10 +40,10 @@ import org.qosp.notes.ui.utils.ConnectionManager
     private val preferenceRepository: PreferenceRepository,
     private val idMappingRepository: IdMappingRepository,
     val connectionManager: ConnectionManager,
-    private val cloudManager: SyncProvider, //TODO 这里有更改，原先为 cloudManager: NextcloudManager
+    private val cloudManager: SyncProvider, //原先为 cloudManager: NextcloudManager
     val syncingScope: CoroutineScope,
 ) {
-    
+
     private val tangshgTAG = "tangshgSyncManager"
 
     val syncManager = cloudManager
@@ -53,11 +53,7 @@ import org.qosp.notes.ui.utils.ConnectionManager
      *
      * @return Flow<SyncPrefs> 包含同步状态、提供者、模式和配置的流。
      */
-    //@OptIn(ExperimentalCoroutinesApi::class) 是一个 Kotlin 注解，
-    // 用于显式启用实验性的协程库 API。这表明代码中使用了一些可能尚未稳定、未来版本可能会改变的特性。
-    // 在给定的代码片段中，添加这个注解表示开发者知道他们正在使用 ExperimentalCoroutinesApi 中的实验性功能，并愿意承担可能的更改风险
     @OptIn(ExperimentalCoroutinesApi::class)
-
     // 定义了一个 Flow<SyncPrefs> 类型的变量 prefs，用于存储同步配置信息。
     // 通过 preferenceRepository.getAll() 方法获取用户偏好设置
     // 这里注意：getAll 的返回值是 Flow<AppPreferences> 类型，表示用户偏好设置。
@@ -66,11 +62,9 @@ import org.qosp.notes.ui.utils.ConnectionManager
     val prefs: Flow<SyncPrefs> = preferenceRepository.getAll().flatMapLatest {
 
         prefs ->
-
         // 根据用户选择的云服务类型获取相应的配置
         // 这里只是获取同步的各种配置，包括是否启用同步、同步模式和云服务类型
         //TODO 在哪里用？
-
         when (prefs.cloudService) {
 
             DISABLED ->
@@ -92,7 +86,7 @@ import org.qosp.notes.ui.utils.ConnectionManager
                 // 如果用户选择了 WebDAV 服务，则返回一个 Flow<SyncPrefs>，其中启用同步为 true，配置为 WebdavConfig
                 //云服务提供商为 WEBDAV
                 WebdavConfig.fromPreferences(preferenceRepository).map { config ->
-                    Log.i(tangshgTAG,"当前的配置 $config")
+                    Log.i(tangshgTAG,"SyncManager 当前的配置 $config")
                     SyncPrefs(true, cloudManager, prefs.syncMode, config)
                 }
 
@@ -107,69 +101,48 @@ import org.qosp.notes.ui.utils.ConnectionManager
      *
      * 得到获取的信息，
      */
-
-    //定义一个变量，config ，从 prefs 中获取 config 字段
-    //TODO 这里 map 函数
     val config = prefs.map { prefs -> prefs.config }
         .stateIn(syncingScope, SharingStarted.WhileSubscribed(5000), null)
-
 
     /**
      * 消息处理器，用于处理来自UI或其他组件的消息，触发相应的同步操作。
      */
     @OptIn(ObsoleteCoroutinesApi::class)
-
-    //actor是Kotlin Coroutines库中的一个函数，用于创建一个并发actor，它处理来自其他协程的消息。
-    // 这个actor在自己的协程上下文中运行，接收到消息后会依次处理，提供了一种线程安全的通信方式。
-    // 通常用于构建反应式系统或实现并发控制。
-
     // 定义一个 actor，用于处理来自 UI 或其他组件的消息，触发相应的同步操作。
     private val actor = syncingScope.actor<Message> {
-
 
         //遍历消息队列
         for (msg in channel) {
             // 根据消息类型，调用相应的同步方法
-            Log.i(tangshgTAG,"收到的消息是：${msg}")
+            Log.i(tangshgTAG,"actor 收到的消息是：${msg}")
 
             with(msg) {
 
-                Log.i(tangshgTAG,"当前使用的 config：${config}")
-                Log.i(tangshgTAG,"当前使用的 provider：${provider}")
+                Log.i(tangshgTAG,"actor 当前使用的 config：${config}, provider：${provider}")
 
                 val result = when (this ) {
 
-
-                    //如果消息是 CreateNote 消息，则调用 provider.createNote 方法，并将结果返回给调用方。
                     is CreateNote -> provider.createNote(note, config)
 
-                    //如果消息是 DeleteNote 消息，则调用 provider.deleteNote 方法
                     is DeleteNote -> provider.deleteNote(note, config)
-                    //如果消息是 MoveNoteToBin 消息，则调用 provider.moveNoteToBin 方法
+
                     is MoveNoteToBin -> provider.moveNoteToBin(note, config)
 
-                    //如果消息是 MoveNoteToBin 消息，则调用 provider.moveNoteToBin 方法
                     is RestoreNote -> provider.restoreNote(note, config)
 
-                    //如果消息是 Sync 消息，则调用 provider.sync 方法
                     is Sync -> provider.sync(config)
 
-                    //如果消息是 UpdateNote 消息，则调用 provider.updateNote 方法
                     is UpdateNote -> provider.updateNote(note, config)
 
-                    //如果消息是 Authenticate 消息，则调用 provider.authenticate 方法
                     is Authenticate -> provider.authenticate(config)
 
-                    //如果消息是 IsServerCompatible 消息，则调用 provider.isServerCompatible 方法
                     is IsServerCompatible -> provider.isServerCompatible(config)
 
-                    //如果消息是 UpdateOrCreate 消息，则根据是否存在本地ID和云端ID的映射关系，调用 provider.updateNote 或 provider.createNote 方法
                     is UpdateOrCreate -> {
                         val exists = idMappingRepository.getByLocalIdAndProvider(note.id, config.provider) != null
                         if (exists) provider.updateNote(note, config) else provider.createNote(note, config)
                     }
                 }
-
                 Log.i(tangshgTAG,"收到执行验证的结果 $result")
 
                 deferred.complete(result)
@@ -185,8 +158,6 @@ import org.qosp.notes.ui.utils.ConnectionManager
      * @param block 满足条件时执行的操作。
      * @return BaseResult 操作的结果。
      */
-
-    //一个内联类
     suspend inline fun ifSyncing(
         customConfig: ProviderConfig? = null,
         fallback: () -> Unit = {},
@@ -239,7 +210,6 @@ import org.qosp.notes.ui.utils.ConnectionManager
     {
             provider, config ->
         //TODO 这里注入错了，如何换成 provider?已经成功注入了 240525
-        Log.i(tangshgTAG," 已经进入 syncManager.authenticate 6")
         Log.i(tangshgTAG,"这里得到的provider 是 ：${provider}")
         Log.i(tangshgTAG,"这里得到的config 是 ：${config}")
         Authenticate(provider, config)
@@ -305,7 +275,7 @@ import org.qosp.notes.ui.utils.ConnectionManager
 
 /**
  * 包含同步设置的数据类。
- * 
+ *
  * @param isEnabled 是否启用同步。
  * @param provider 使用的同步提供者。
  * @param mode 同步模式，可以是WIFI和移动网络。
