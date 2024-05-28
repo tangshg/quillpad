@@ -24,17 +24,16 @@ object WebdavModule {
 
     @Provides
     @Singleton
-    fun provideWebdavAPI(config: WebdavConfig): WebdavAPI {
+    fun provideWebdavAPI(config: WebdavConfig): WebdavAPIImpl {
         //TODO 在这里对 sardine 进行配置是否合理？
-        val sardine = OkHttpSardine()
-        sardine.setCredentials(config.username, config.password)
-        return WebdavAPIImpl(sardine)
+
+        return WebdavAPIImpl()
     }
 
     @Provides
     @Singleton
     fun provideWebdavManager(
-        webdavAPI: WebdavAPI,
+        webdavAPI: WebdavAPIImpl,
         @Named(NO_SYNC) noteRepository: NoteRepository,
         @Named(NO_SYNC) notebookRepository: NotebookRepository,
         idMappingRepository: IdMappingRepository,

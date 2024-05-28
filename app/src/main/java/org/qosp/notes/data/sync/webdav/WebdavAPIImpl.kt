@@ -10,7 +10,7 @@ import org.qosp.notes.data.sync.webdav.model.WebdavNote
 import java.io.IOException
 import kotlinx.serialization.decodeFromString
 
-class WebdavAPIImpl(private val sardine: Sardine) : WebdavAPI {
+class WebdavAPIImpl() : WebdavAPI {
 
     private val tangshgTAG = "tangshgWebdavAPIImpl"
 

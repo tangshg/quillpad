@@ -69,14 +69,10 @@ class WebdavViewModel @Inject constructor(
 
         Log.i(tangshgTAG, "得到配置文件 $config")
 
-        //TODO 这里是测试认证头
-        val tangshgTest = config.sardine.list(config.remoteAddress)
-        Log.i(tangshgTAG, "查看通过认证后的结果 $tangshgTest")
-
         //获取 webdav 的网址
-        val url = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
-
-        Log.i(tangshgTAG, "当前连接的网址为$url ")
+//        val url = preferenceRepository.getEncryptedString(PreferenceRepository.WEBDAV_INSTANCE_URL).first()
+//
+//        Log.i(tangshgTAG, "当前连接的网址为$url ")
 
         //这段代码使用了Kotlin的withContext函数，它用于在指定的上下文中执行一个block，
         // 并返回block的执行结果。这里指定的上下文是Dispatchers.IO，表示在IO线程池中执行block。
@@ -95,8 +91,7 @@ class WebdavViewModel @Inject constructor(
             loginResult
         }
 
-        //连接成功后，需要存储账号密码
-        //存储账号密码
+        //连接成功后，存储账号密码
         //这个函数根据response的值，如果等于Success，
         // 则将username和password以加密形式存储到preferenceRepository中。
         // also函数用于在返回response的同时执行一些额外的操作。

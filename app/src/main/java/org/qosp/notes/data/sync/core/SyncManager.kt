@@ -36,6 +36,7 @@ class SyncManager(
     val prefs: Flow<SyncPrefs> = preferenceRepository.getAll().flatMapLatest { prefs ->
         when (prefs.cloudService) {
             DISABLED -> flowOf(SyncPrefs(false, null, prefs.syncMode, null))
+
             NEXTCLOUD -> {
                 NextcloudConfig.fromPreferences(preferenceRepository).map { config ->
                     SyncPrefs(true, cloudManager, prefs.syncMode, config)

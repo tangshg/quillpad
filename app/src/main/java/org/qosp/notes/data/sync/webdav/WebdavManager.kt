@@ -53,7 +53,30 @@ class WebdavManager(
 ) : SyncProvider {
 
     private val tangshgTAG = "tangshgWebdavManager"
+    /**
+     * 验证配置信息的有效性并进行身份验证。
+     *
+     * @param config 配置信息，必须是 WebdavConfig类型。
+     * @return 验证结果。
+     */
+    override suspend fun authenticate(config: ProviderConfig): BaseResult {
 
+        //如果接收的不是 webdavConfig 类型，返回无效配置
+        Log.i(tangshgTAG, "当前接受的配置 $config")
+        if (config !is WebdavConfig) return InvalidConfig
+        Log.i(tangshgTAG, "当前接受的配置 $config")
+
+        //TODO 这个如 return 只用来测试，后期删除
+        //return Success
+
+        //tryCalling 接受一个函数作为参数，如果函数执行成功，则返回 Success，否则返回 GenericError
+        return tryCalling {
+            Log.i(tangshgTAG, "已经进入 authenticate 方法")
+            Log.i(tangshgTAG, "即将进入$webdavAPI")
+            webdavAPI.testCredentials(config)
+            webdavAPI.getNoteAPI("aa", sardine = config.sardine)
+        }
+    }
     /**
      * 在 webdav 服务器上创建新的笔记。
      * @param note 要创建的笔记。
@@ -66,17 +89,11 @@ class WebdavManager(
         config: ProviderConfig
     ): BaseResult {
 
-        //如果不是 webdav 的配置，返回无效配置
         if (config !is WebdavConfig) return InvalidConfig
-
-        //获取笔记的 WebdavNote 对象
         val webdavNote = note.asWebdavNote()
 
         //如果笔记的ID不为0，则说明笔记已经存在，返回 能创建笔记，因为笔记已经存在
         if (webdavNote.id != 0L) return GenericError("Cannot create note that already exists")
-
-
-        //前置检查没错，就开始新建笔记
 
         //这段代码定义了一个kotlin函数，函数名为tryCalling，其接受一个lambda表达式作为参数。
         // 函数的功能是尝试执行lambda表达式中提供的代码块，并返回执行结果。如果在执行过程中发生异常，则捕获异常并返回null。
@@ -175,31 +192,7 @@ class WebdavManager(
         }
     }
 
-    /**
-     * 验证配置信息的有效性并进行身份验证。
-     *
-     * @param config 配置信息，必须是 WebdavConfig类型。
-     * @return 验证结果。
-     */
-    override suspend fun authenticate(config: ProviderConfig): BaseResult {
 
-        //如果接收的不是 webdavConfig 类型，返回无效配置
-        Log.i(tangshgTAG, "当前接受的配置 $config")
-        if (config !is WebdavConfig) return InvalidConfig
-        Log.i(tangshgTAG, "当前接受的配置 $config")
-
-        //TODO 这个如 return 只用来测试，后期删除
-        //return Success
-
-        //如果是 webdavConfig 类型，就调用 webdavAPI 的 testCredentials 方法进行身份验证
-
-        //tryCalling 接受一个函数作为参数，如果函数执行成功，则返回 Success，否则返回 GenericError
-        return tryCalling {
-            Log.i(tangshgTAG, "已经进入 authenticate 方法")
-            Log.i(tangshgTAG, "即将进入$webdavAPI")
-            webdavAPI.testCredentials(config)
-        }
-    }
 
     /**
      * 检查服务器是否兼容Webdav服务。
@@ -422,8 +415,11 @@ class WebdavManager(
     private inline fun tryCalling(block: () -> Unit): BaseResult {
         return try {
             block()
+            Log.i(tangshgTAG,"tryCalling 执行成功")
             Success
         } catch (e: Exception) {
+
+            Log.i(tangshgTAG,"tryCalling 执行失败 $e")
             when (e) {
                 ServerNotSupportedException -> ServerNotSupported
                 is HttpException -> {
