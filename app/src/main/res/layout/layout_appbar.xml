@@ -3,14 +3,14 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/app_bar"
-        android:background="?attr/colorBackground"
+        android:background="?attr/colorPrimary"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:animateLayoutChanges="true"
         app:liftOnScroll="true">
 
     <androidx.appcompat.widget.Toolbar
-            android:background="?attr/colorBackground"
+            android:background="?attr/colorPrimary"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"

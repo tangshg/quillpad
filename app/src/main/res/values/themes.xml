@@ -71,7 +71,7 @@
 
     <style name="Blue">
         <item name="colorPrimary">#2196f3</item>
-        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="colorPrimaryDark">#000000</item>
         <item name="colorSecondary">#2196f3</item>
 
         <item name="colorDrawerHeaderBackground">#992196F3</item>
@@ -80,11 +80,11 @@
     </style>
 
     <style name="Green">
-        <item name="colorPrimary">#7CB342</item>
-        <item name="colorPrimaryDark">@android:color/transparent</item>
-        <item name="colorSecondary">#7CB342</item>
+        <item name="colorPrimary">#009788</item>
+        <item name="colorPrimaryDark">#00796A</item>
+        <item name="colorSecondary">#009788</item>
 
-        <item name="colorDrawerHeaderBackground">#997CB342</item>
+        <item name="colorDrawerHeaderBackground">#009788</item>
         <item name="colorPrimaryTranscluent">#337CB342</item>
 
     </style>
@@ -116,6 +116,14 @@
 
         <item name="colorDrawerHeaderBackground">#99673AB7</item>
         <item name="colorPrimaryTranscluent">#29673AB7</item>
+    </style>
 
+    <style name="Cyan4C">
+        <item name="colorPrimary">#00796A</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="colorSecondary">#00796A</item>
+
+        <item name="colorDrawerHeaderBackground">#99673AB7</item>
+        <item name="colorPrimaryTranscluent">#29673AB7</item>
     </style>
 </resources>

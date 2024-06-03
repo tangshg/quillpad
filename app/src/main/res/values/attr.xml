@@ -6,6 +6,9 @@
     <attr name="colorShadow" format="color"/>
     <attr name="colorTextOverlay" format="color"/>
     <attr name="colorHighlightMask" format="color"/>
+    <attr name="colorPrimary" format="color"/>
+    <attr name="colorPrimaryDark" format="color"/>
+
 
     <!-- Navigation drawer -->
     <attr name="colorDrawerBackground" format="color"/>
